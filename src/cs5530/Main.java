@@ -11,7 +11,7 @@ public class Main
 	public static void main(String[] args)
 	{
 		Connector conn = null;
-		Session session;
+		Session session = null;
 		
 		try {
 			conn = new Connector();
@@ -33,7 +33,13 @@ public class Main
 			if(res1.equals("login"))
 			{
 				session = login(conn.stmt);
-				do1 = false;
+				
+				if (session != null) {
+					do1 = false;
+				} else {
+					do1 = true;
+					System.out.println("Invalid username/password. Please type login or register:");
+				}
 			}
 			else if(res1.equals("register"))
 			{
@@ -47,7 +53,7 @@ public class Main
 			}
 		}
 		
-		System.out.println("Welcome [NAME]! Please type a command or \"help\" for a list of commands.");
+		System.out.println("Welcome " + session.getLogin() + "! Please type a command or \"help\" for a list of commands.");
 
 		while(!(res2 == "quit" || res2 == "exit"))
 		{
@@ -98,26 +104,22 @@ public class Main
 		ResultSet results = null;
 		Session session = new Session();
 		
-		while (true) {
-			System.out.print("Enter your login username: ");
-			String login = sc.nextLine();
-			System.out.print("Enter your password: ");
-			String password = sc.nextLine();
-			String query = String.format("SELECT * FROM Users WHERE login='%s' AND password='%s';", login, password);
-			try {
-				results = stmt.executeQuery(query);
-				if (results.next() && results != null) {
-					System.out.println("You have been logged in.");
-					session.setLogin(login);
-					break;
-				} else {
-					System.out.println("Invalid username/password");
-				}
-			} catch(Exception e) {
-				System.out.println(e);
+		System.out.print("Enter your login username: ");
+		String login = sc.nextLine();
+		System.out.print("Enter your password: ");
+		String password = sc.nextLine();
+		String query = String.format("SELECT * FROM Users WHERE login='%s' AND password='%s';", login, password);
+		try {
+			results = stmt.executeQuery(query);
+			if (results.next() && results != null) {
+				System.out.println("You have been logged in.");
+				session.setLogin(login);
+				return session;
 			}
+		} catch (Exception e) {
+			System.out.println(e);
 		}
-		
-		return session;
+
+		return null;
 	}
 }
