@@ -9,7 +9,7 @@ public class Connector {
 		try{
 		 	String userName = "5530u59";
 	   		String password = "g4o4auc6";
-	        	String url = "jdbc:mysql://georgia.eng.utah.edu/cs5530db";
+	        	String url = "jdbc:mysql://georgia.eng.utah.edu/5530db59";
 		        Class.forName ("com.mysql.jdbc.Driver").newInstance ();
         		con = DriverManager.getConnection (url, userName, password);
 

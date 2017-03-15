@@ -1,12 +1,25 @@
 package cs5530;
 
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Scanner;
 
 public class Main
 {
+	static Scanner sc = new Scanner(System.in);
+	
 	public static void main(String[] args)
 	{
-		Scanner sc = new Scanner(System.in);
+		Connector conn = null;
+		Session session;
+		
+		try {
+			conn = new Connector();
+		} catch(Exception e) {
+			System.out.println("Database inaccessible");
+			System.exit(1);
+		}
+		
 		String res1 = "";
 		String res2 = "";
 		boolean do1 = true;
@@ -17,14 +30,14 @@ public class Main
 		{
 			res1 = sc.nextLine();
 			
-			if(res1 == "login")
+			if(res1.equals("login"))
 			{
-				// do login routine
+				session = login(conn.stmt);
 				do1 = false;
 			}
-			else if(res1 == "register")
+			else if(res1.equals("register"))
 			{
-				// do register routine
+				registration(conn.stmt);
 				do1 = false;
 			}
 			else
@@ -56,5 +69,55 @@ public class Main
 				break;
 			}
 		}
+	}
+	
+	public static void registration(Statement stmt) {
+		System.out.print("Enter your login username: ");
+		String login = sc.nextLine();
+		System.out.print("Enter your name: ");
+		String name = sc.nextLine();
+		System.out.print("Enter your address: ");
+		String address = sc.nextLine();
+		System.out.print("Enter your password: ");
+		String password = sc.nextLine();
+		System.out.print("Enter your phone number: ");
+		String phone_num = sc.nextLine();
+		
+		String query = String.format("INSERT INTO Users VALUES ('%s', '%s', '%s', '%s', '%s')", 
+				login, name, address, password, phone_num);
+		
+		try {
+			stmt.execute(query);
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+		System.out.println("You have successfully registered\n");
+	}
+	
+	public static Session login(Statement stmt) {
+		ResultSet results = null;
+		Session session = new Session();
+		
+		while (true) {
+			System.out.print("Enter your login username: ");
+			String login = sc.nextLine();
+			System.out.print("Enter your password: ");
+			String password = sc.nextLine();
+			String query = String.format("SELECT * FROM Users WHERE login='%s' AND password='%s';", login, password);
+			try {
+				results = stmt.executeQuery(query);
+				if (results.next() && results != null) {
+					System.out.println("You have been logged in.");
+					session.setLogin(login);
+					break;
+				} else {
+					System.out.println("Invalid username/password");
+				}
+			} catch(Exception e) {
+				System.out.println(e);
+			}
+		}
+		
+		return session;
 	}
 }
