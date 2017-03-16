@@ -55,14 +55,62 @@ public class Main
 		
 		System.out.println("Welcome " + session.getLogin() + "! Please type a command or \"help\" for a list of commands.");
 
-		while(!(res2 == "quit" || res2 == "exit"))
+		while(!(res2.equals("quit") || res2.equals("exit")))
 		{
 			res2 = sc.nextLine();
 			
 			switch(res2)
 			{
 			case "help":
-				System.out.println("Available commands: \"help\", \"reserve\", \"new\", \"stays\", \"favorite\", \"feedback\", \"usefullness\"");
+				System.out.println("Available commands: help, reserve, new, stays, favorite, feedback, usefullness, trust, browse, useful feedback, separation, statistics, awards, quit.");
+				break;
+				
+			case "reserve":
+				Reserve();
+				break;	
+				
+			case "new":
+				New();
+				break;	
+				
+			case "stays":
+				Stays();
+				break;	
+				
+			case "favorite":
+				Favorite();
+				break;	
+				
+			case "feedback":
+				Feedback();
+				break;	
+				
+			case "usefullness":
+				Usefullness();
+				break;	
+				
+			case "trust":
+				Trust();
+				break;	
+				
+			case "browse":
+				Browse();
+				break;	
+				
+			case "useful feedback":
+				UsefulFeedback();
+				break;	
+				
+			case "separation":
+				Separation();
+				break;	
+				
+			case "statistics":
+				Statistics();
+				break;	
+				
+			case "awards":
+				Awards();
 				break;
 				
 			case "quit":
@@ -75,6 +123,7 @@ public class Main
 				break;
 			}
 		}
+		sc.close();
 	}
 	
 	public static void registration(Statement stmt) {
@@ -121,5 +170,148 @@ public class Main
 		}
 
 		return null;
+	}
+	
+	private static void Awards() 
+	{
+		Scanner sc = new Scanner(System.in);
+		int m = 0;
+		
+		System.out.println("Displays the top m most trusted and most useful users.");
+		
+		sc.close();
+	}
+
+	private static void Statistics() 
+	{
+		Scanner sc = new Scanner(System.in);
+		int m = 0;
+		
+		System.out.println("Displays the m most popular THs, m most expensive THs, and m most highly rated THs.");
+		
+		sc.close();
+	}
+
+	private static void Separation() 
+	{
+		Scanner sc = new Scanner(System.in);
+		String user1 = "";
+		String user2 = "";
+		
+		System.out.println("Determines the degree of separation between two users.");
+		
+		sc.close();
+	}
+
+	private static void Suggestions() 
+	{
+		// Displays a list of suggested THs based on current reservation.
+		
+	}
+
+	private static void UsefulFeedback() 
+	{
+		Scanner sc = new Scanner(System.in);
+		int n = 0;
+		
+		System.out.println("Displays the top n most useful feedbacks for a TH.");
+		
+		sc.close();
+	}
+
+	private static void Browse() 
+	{
+		Scanner sc = new Scanner(System.in);
+		
+		double priceLow = 0.0;
+		double priceHi  = 0.0;
+		String address  = "";
+		String keywords = "";
+		String category = "";
+		String sortBy   = "";
+		
+		System.out.println("Displays THs that match the specified criteria.");
+		
+		sc.close();
+	}
+
+	private static void Trust() 
+	{
+		Scanner sc = new Scanner(System.in);
+		String user = "";
+		boolean trusted;
+		
+		System.out.println("Declare other users at trustworthy or not.");
+		
+		sc.close();
+	}
+
+	private static void Usefullness() 
+	{
+		Scanner sc = new Scanner(System.in);
+		String record = "";
+		int score = 0;
+		
+		System.out.println("Assess a feedback record as useful or not.");
+		
+		sc.close();
+	}
+
+	private static void Feedback() 
+	{
+		Scanner sc = new Scanner(System.in);
+		
+		String date = "";
+		int score = 0;
+		String text = "";
+		
+		System.out.println("Record feedback for a TH.");
+		
+		sc.close();
+	}
+
+	private static void Favorite() 
+	{
+		Scanner sc = new Scanner(System.in);
+		String TH = "";
+		
+		System.out.println("Declare a TH as a favorite place to stay.");
+		
+		sc.close();
+	}
+
+	private static void Stays() 
+	{
+		Scanner sc = new Scanner(System.in);
+		String TH = "";
+		
+		System.out.println("Record a stay at a TH.");
+		
+		sc.close();
+	}
+
+	private static void New() 
+	{
+		Scanner sc = new Scanner(System.in);
+		
+		// Lots of stuff.
+		
+		System.out.println("Record details of a new TH or update info of an existing owned one.");
+		
+		sc.close();
+	}
+
+	private static void Reserve() 
+	{
+		Scanner sc = new Scanner(System.in);
+		
+		// Lots of stuff.
+		
+		System.out.println("Record a reservation to stay at a TH.");
+		
+		// Happens at the end of a reservation, not its own command.
+		Suggestions();
+		
+		sc.close();
 	}
 }
