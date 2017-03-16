@@ -70,7 +70,7 @@ public class Main
 				break;	
 				
 			case "new":
-				New();
+				New(conn.stmt, session);
 				break;	
 				
 			case "stays":
@@ -290,15 +290,34 @@ public class Main
 		sc.close();
 	}
 
-	private static void New() 
+	private static void New(Statement stmt, Session session) 
 	{
-		Scanner sc = new Scanner(System.in);
-		
-		// Lots of stuff.
-		
 		System.out.println("Record details of a new TH or update info of an existing owned one.");
+		System.out.print("Enter the category: ");
+		String category = sc.nextLine();
+		System.out.print("Enter the address: ");
+		String address = sc.nextLine();
+		System.out.print("Enter the phone number: ");
+		String phone_num = sc.nextLine();
+		System.out.print("Enter the name: ");
+		String name = sc.nextLine();
+		System.out.print("Enter the year house was built: ");
+		int year_built = Integer.parseInt(sc.nextLine());
+		System.out.print("Enter the URL for the TH:");
+		String url = sc.nextLine();
+		String login = session.getLogin();
 		
-		sc.close();
+		String query = String.format("INSERT INTO TH (category, address, phone_num, name, year_built, url, login)"
+				+ " VALUES ('%s', '%s', '%s', '%s', %d, '%s', '%s')",
+				category, address, phone_num, name, year_built, url, login);
+		
+		try {
+			stmt.execute(query);
+			System.out.println("TH has been added!");
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+		
 	}
 
 	private static void Reserve() 
