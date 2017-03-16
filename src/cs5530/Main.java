@@ -116,6 +116,12 @@ public class Main
 			case "quit":
 			case "exit":
 				System.out.println("Goodbye.");
+				try {
+					conn.closeConnection();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 				
 			default:
@@ -292,30 +298,18 @@ public class Main
 
 	private static void New(Statement stmt, Session session) 
 	{
-		System.out.println("Record details of a new TH or update info of an existing owned one.");
-		System.out.print("Enter the category: ");
-		String category = sc.nextLine();
-		System.out.print("Enter the address: ");
-		String address = sc.nextLine();
-		System.out.print("Enter the phone number: ");
-		String phone_num = sc.nextLine();
-		System.out.print("Enter the name: ");
-		String name = sc.nextLine();
-		System.out.print("Enter the year house was built: ");
-		int year_built = Integer.parseInt(sc.nextLine());
-		System.out.print("Enter the URL for the TH:");
-		String url = sc.nextLine();
-		String login = session.getLogin();
+		System.out.println("Please use commands \"new listing\" to create a listing "
+				+ "or \"new th\" for a new temporary housing entry");
+		String cmd = sc.nextLine();
+		ResultSet results = null;
 		
-		String query = String.format("INSERT INTO TH (category, address, phone_num, name, year_built, url, login)"
-				+ " VALUES ('%s', '%s', '%s', '%s', %d, '%s', '%s')",
-				category, address, phone_num, name, year_built, url, login);
-		
-		try {
-			stmt.execute(query);
-			System.out.println("TH has been added!");
-		} catch(Exception e) {
-			System.out.println(e);
+		switch (cmd) {
+			case "new th":
+				TH.new_th(sc, stmt, session);
+				break;
+			case "new listing":
+				TH.new_listing(sc, stmt, session);
+				break;
 		}
 		
 	}
