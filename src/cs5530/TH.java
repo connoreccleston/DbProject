@@ -36,7 +36,6 @@ public class TH {
 			
 			query = String.format("INSERT INTO Available VALUES (%d, %d, %f)",
 					hid, pid, price);
-			System.out.print(query);
 			stmt.execute(query);
 			System.out.println("TH has been listed!");
 		} catch(Exception e) {
