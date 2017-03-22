@@ -135,12 +135,16 @@ public class Main
 	public static void registration(Statement stmt) {
 		System.out.print("Enter your login username: ");
 		String login = sc.nextLine();
+                
 		System.out.print("Enter your name: ");
 		String name = sc.nextLine();
+                
 		System.out.print("Enter your address: ");
 		String address = sc.nextLine();
+                
 		System.out.print("Enter your password: ");
 		String password = sc.nextLine();
+                
 		System.out.print("Enter your phone number: ");
 		String phone_num = sc.nextLine();
 		
@@ -161,8 +165,10 @@ public class Main
 		
 		System.out.print("Enter your login username: ");
 		String login = sc.nextLine();
+                
 		System.out.print("Enter your password: ");
 		String password = sc.nextLine();
+                
 		String query = String.format("SELECT * FROM Users WHERE login='%s' AND password='%s';", login, password);
 		try {
 			results = stmt.executeQuery(query);
@@ -180,33 +186,29 @@ public class Main
 	
 	private static void Awards() 
 	{
-		Scanner sc = new Scanner(System.in);
-		int m = 0;
-		
-		System.out.println("Displays the top m most trusted and most useful users.");
-		
-		sc.close();
+		System.out.println("This command displays a number of the most trusted and most useful users.");
+                
+                System.out.print("How many users do you want to see? ");
+		int n = sc.nextInt();		
 	}
 
 	private static void Statistics() 
 	{
-		Scanner sc = new Scanner(System.in);
-		int m = 0;
-		
-		System.out.println("Displays the m most popular THs, m most expensive THs, and m most highly rated THs.");
-		
-		sc.close();
-	}
+                System.out.println("This command displays a number of the most popular, expensive, and highly rated housing options.");
+                
+                System.out.print("How many housings do you want to see? ");
+		int n = sc.nextInt();	
+    	}
 
 	private static void Separation() 
 	{
-		Scanner sc = new Scanner(System.in);
-		String user1 = "";
-		String user2 = "";
-		
-		System.out.println("Determines the degree of separation between two users.");
-		
-		sc.close();
+		System.out.println("This command determines the degree of separation between two users based on favorite housing.");
+                
+                System.out.print("Username 1: ");		
+                String user1 = sc.nextLine();
+                
+                System.out.print("Username 2: ");
+		String user2 = sc.nextLine();		
 	}
 
 	private static void Suggestions() 
@@ -217,83 +219,82 @@ public class Main
 
 	private static void UsefulFeedback() 
 	{
-		Scanner sc = new Scanner(System.in);
-		int n = 0;
-		
-		System.out.println("Displays the top n most useful feedbacks for a TH.");
-		
-		sc.close();
+                System.out.println("This command displays a number of the most useful feedbacks for a housing.");
+                
+                System.out.print("How many feedbacks do you want to see? ");
+		int n = sc.nextInt();                		
 	}
 
 	private static void Browse() 
-	{
-		Scanner sc = new Scanner(System.in);
+	{		
+		System.out.println("This command displays housing options that match specified criteria.");
+                
+                System.out.print("Lowest price: ");
+		double priceLow = sc.nextDouble();
+                
+                System.out.print("Highest price: ");                
+		double priceHigh = sc.nextDouble();
+                
+                System.out.print("City or State: ");
+		String address = sc.nextLine();
+                
+                System.out.println("Comma separated list of keywords: ");
+		String keywords = sc.nextLine();
+                
+                System.out.print("Category: ");
+		String category = sc.nextLine();
+                
+                System.out.print("Sorting method (price, feedback, trusted feedback): ");
+		String sortBy = sc.nextLine();
 		
-		double priceLow = 0.0;
-		double priceHi  = 0.0;
-		String address  = "";
-		String keywords = "";
-		String category = "";
-		String sortBy   = "";
-		
-		System.out.println("Displays THs that match the specified criteria.");
-		
-		sc.close();
 	}
 
 	private static void Trust() 
 	{
-		Scanner sc = new Scanner(System.in);
-		String user = "";
-		boolean trusted;
+                boolean trusted;
+                
+		System.out.println("This command lets you declare other users at trustworthy or not.");
+                
+                System.out.print("Username: ");
+		String user = sc.nextLine();
+                
+                System.out.print("Trust this user? (yes/no) ");
+                if(sc.nextLine().equalsIgnoreCase("yes"))
+                    trusted = true;
+                else
+                    trusted = false;
 		
-		System.out.println("Declare other users at trustworthy or not.");
-		
-		sc.close();
 	}
 
 	private static void Usefullness() 
 	{
-		Scanner sc = new Scanner(System.in);
 		String record = "";
 		int score = 0;
 		
 		System.out.println("Assess a feedback record as useful or not.");
-		
-		sc.close();
 	}
 
 	private static void Feedback() 
-	{
-		Scanner sc = new Scanner(System.in);
-		
+	{		
 		String date = "";
 		int score = 0;
 		String text = "";
 		
 		System.out.println("Record feedback for a TH.");
-		
-		sc.close();
 	}
 
 	private static void Favorite() 
 	{
-		Scanner sc = new Scanner(System.in);
 		String TH = "";
 		
 		System.out.println("Declare a TH as a favorite place to stay.");
-		
-		sc.close();
 	}
 
 	private static void Stays() 
 	{
-		Scanner sc = new Scanner(System.in);
 		String TH = "";
 		
 		System.out.println("Record a stay at a TH.");
-		
-		sc.close();
 	}
 
 	private static void New(Statement stmt, Session session) 
@@ -315,16 +316,12 @@ public class Main
 	}
 
 	private static void Reserve() 
-	{
-		Scanner sc = new Scanner(System.in);
-		
-		// Lots of stuff.
+	{		
+		// Lots of vars.
 		
 		System.out.println("Record a reservation to stay at a TH.");
 		
 		// Happens at the end of a reservation, not its own command.
 		Suggestions();
-		
-		sc.close();
 	}
 }
