@@ -253,7 +253,7 @@ public class Main
 	{
                 boolean trusted;
                 
-		System.out.println("This command lets you declare other users at trustworthy or not.");
+		System.out.println("This command lets you declare other users as trustworthy or not.");
                 
                 System.out.print("Username: ");
 		String user = sc.nextLine();
@@ -268,33 +268,52 @@ public class Main
 
 	private static void Usefullness() 
 	{
-		String record = "";
-		int score = 0;
-		
-		System.out.println("Assess a feedback record as useful or not.");
+                int score;
+            
+		System.out.println("This command lets you assess a feedback record as useful or not.");
+                
+		String record = ""; // Does the user specify a feedback somehow, or can they only apply this when viewing a feedback?
+                
+                System.out.println("How useful is it? (useless/useful/very useful)");
+                String input = sc.nextLine();
+                if(input.equalsIgnoreCase("useless"))
+                    score = 0;
+                else if(input.equalsIgnoreCase("useful"))
+                    score = 1;
+                else if(input.equalsIgnoreCase("very useful"))
+                    score = 2;		
 	}
 
 	private static void Feedback() 
-	{		
-		String date = "";
-		int score = 0;
-		String text = "";
-		
-		System.out.println("Record feedback for a TH.");
+	{	
+		System.out.println("This command lets you record feedback for a housing.");
+                
+                String TH = ""; // Does the user specify a TH somehow, or can they only apply this when viewing a TH?
+                
+		String date = ""; // Can we do this through SQL, grabbing the current date?
+                
+                System.out.print("Rate the housing on a scale of 0-10: ");
+		int score = sc.nextInt();
+                
+                System.out.println("Comment (optional):");
+		String text = sc.nextLine();
 	}
 
 	private static void Favorite() 
 	{
-		String TH = "";
-		
-		System.out.println("Declare a TH as a favorite place to stay.");
+		System.out.println("This command lets you declare a housing as a favorite place to stay.");
+                
+		String TH = ""; // Does the user specify a TH somehow, or can they only apply this when viewing a TH?
+                
+                // Set TH as favorite.
 	}
 
 	private static void Stays() 
 	{
-		String TH = "";
-		
-		System.out.println("Record a stay at a TH.");
+		System.out.println("This command lets you record a stay at a housing.");
+		String TH = "";	 // Does the user specify a TH somehow, or can they only apply this when viewing a TH?
+                
+                // What other attributes need to be gathered?
 	}
 
 	private static void New(Statement stmt, Session session) 
