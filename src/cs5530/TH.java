@@ -17,8 +17,8 @@ public class TH {
 				System.out.println(line);
 			}
 			System.out.print("Please enter the id of the TH you'd like to setup a listing for:");
-			int hid = Integer.parseInt(sc.nextLine());
-			System.out.print("Please enter start date in yyyy-mm-dd format:");
+			int hid = sc.nextInt(); //Integer.parseInt(sc.nextLine());
+			System.out.print("Please enter start date in yyyy-mm-dd format:"); // Use some sort of date class?
 			String start_date = sc.nextLine();
 			System.out.print("Please enter end date in yyyy-mm-dd format:");
 			String end_date = sc.nextLine();
@@ -43,7 +43,7 @@ public class TH {
 		}
 	}
 	
-	public static void new_th(Scanner sc, Statement stmt, Session session) {
+	public static void new_th(Scanner sc, Statement stmt, Session session) { // Is this only supporting new? How can we allow modification of old?
 		System.out.println("Record details of a new TH or update info of an existing owned one.");
 		System.out.print("Enter the category: ");
 		String category = sc.nextLine();
@@ -54,7 +54,7 @@ public class TH {
 		System.out.print("Enter the name: ");
 		String name = sc.nextLine();
 		System.out.print("Enter the year house was built: ");
-		int year_built = Integer.parseInt(sc.nextLine());
+		int year_built = sc.nextInt(); //Integer.parseInt(sc.nextLine());
 		System.out.print("Enter the URL for the TH:");
 		String url = sc.nextLine();
 		String login = session.getLogin();

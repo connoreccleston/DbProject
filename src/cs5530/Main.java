@@ -10,56 +10,57 @@ public class Main
 	
 	public static void main(String[] args)
 	{
-		Connector conn = null;
+		Connector connector = null;
 		Session session = null;
 		
 		try {
-			conn = new Connector();
+			connector = new Connector();
 		} catch(Exception e) {
-			System.out.println("Database inaccessible");
+			System.err.println("Database inaccessible.");
 			System.exit(1);
 		}
 		
-		String res1 = "";
-		String res2 = "";
-		boolean do1 = true;
+		String input;
+		boolean loopLogin = true;
 		
 		System.out.println("Welcome to Uotel. Please type \"register\" if you are a new user or \"login\" if you are a returning user.");
 		
-		while(do1)
+		while(loopLogin)
 		{
-			res1 = sc.nextLine();
+			input = sc.nextLine();
 			
-			if(res1.equals("login"))
+			if(input.equals("login"))
 			{
-				session = login(conn.stmt);
+				session = login(connector.stmt);
 				
 				if (session != null) {
-					do1 = false;
+					loopLogin = false;
 				} else {
-					do1 = true;
-					System.out.println("Invalid username/password. Please type login or register:");
+					loopLogin = true;
+					System.err.println("Invalid username/password. Please type login or register:");
 				}
 			}
-			else if(res1.equals("register"))
+			else if(input.equals("register"))
 			{
-				registration(conn.stmt);
-				do1 = false;
+				session = registration(connector.stmt);
+				loopLogin = false;
 			}
 			else
 			{
 				System.err.println("Invalid input.");
-				do1 = true;
+				loopLogin = true;
 			}
 		}
 		
 		System.out.println("Welcome " + session.getLogin() + "! Please type a command or \"help\" for a list of commands.");
 
-		while(!(res2.equals("quit") || res2.equals("exit")))
+		input = "";
+                
+                while(!input.equals("quit"))
 		{
-			res2 = sc.nextLine();
+			input = sc.nextLine();
 			
-			switch(res2)
+			switch(input)
 			{
 			case "help":
 				System.out.println("Available commands: help, reserve, new, stays, favorite, feedback, usefullness, trust, browse, useful feedback, separation, statistics, awards, quit.");
@@ -70,7 +71,7 @@ public class Main
 				break;	
 				
 			case "new":
-				New(conn.stmt, session);
+				New(connector.stmt, session);
 				break;	
 				
 			case "stays":
@@ -114,13 +115,11 @@ public class Main
 				break;
 				
 			case "quit":
-			case "exit":
 				System.out.println("Goodbye.");
 				try {
-					conn.closeConnection();
+					connector.closeConnection();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+                                        System.err.println(e);
 				}
 				break;
 				
@@ -132,7 +131,10 @@ public class Main
 		sc.close();
 	}
 	
-	public static void registration(Statement stmt) {
+	public static Session registration(Statement stmt) {            
+                ResultSet results = null;
+                Session session = new Session();
+            
 		System.out.print("Enter your login username: ");
 		String login = sc.nextLine();
                 
@@ -154,9 +156,23 @@ public class Main
 		try {
 			stmt.execute(query);
 		} catch(Exception e) {
+			System.err.println(e);
+		}
+		System.out.println("You have successfully registered.\n");
+                
+                query = String.format("SELECT * FROM Users WHERE login='%s' AND password='%s';", login, password);
+		try {
+			results = stmt.executeQuery(query);
+			if (results.next() && results != null) {
+				System.out.println("You have been logged in.");
+				session.setLogin(login);
+				return session;
+			}
+		} catch (Exception e) {
 			System.out.println(e);
 		}
-		System.out.println("You have successfully registered\n");
+
+		return null;
 	}
 	
 	public static Session login(Statement stmt) {
