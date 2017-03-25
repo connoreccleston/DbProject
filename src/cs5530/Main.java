@@ -11,7 +11,7 @@ public class Main
 	public static void main(String[] args)
 	{
 		Connector connector = null;
-		Session session = null;
+                Session session = null;
 		
 		try {
 			connector = new Connector();
@@ -52,12 +52,13 @@ public class Main
 			}
 		}
 		
-		System.out.println("Welcome " + session.getLogin() + "! Please type a command or \"help\" for a list of commands.");
+		System.out.print("Welcome " + session.getLogin() + "! ");
 
 		input = "";
                 
                 while(!input.equals("quit"))
 		{
+                        System.out.println("Please type a command or \"help\" for a list of commands.");
 			input = sc.nextLine();
 			
 			switch(input)
@@ -67,7 +68,7 @@ public class Main
 				break;
 				
 			case "reserve":
-				Reserve();
+				Reserve(connector.stmt, session);
 				break;	
 				
 			case "new":
@@ -75,43 +76,43 @@ public class Main
 				break;	
 				
 			case "stays":
-				Stays();
+				Stays(connector.stmt, session);
 				break;	
 				
 			case "favorite":
-				Favorite();
+				Favorite(connector.stmt, session);
 				break;	
 				
 			case "feedback":
-				Feedback();
+				Feedback(connector.stmt, session);
 				break;	
 				
 			case "usefullness":
-				Usefullness();
+				Usefullness(connector.stmt, session);
 				break;	
 				
 			case "trust":
-				Trust();
+				Trust(connector.stmt, session);
 				break;	
 				
 			case "browse":
-				Browse();
+				Browse(connector.stmt, session);
 				break;	
 				
 			case "useful feedback":
-				UsefulFeedback();
+				UsefulFeedback(connector.stmt, session);
 				break;	
 				
 			case "separation":
-				Separation();
+				Separation(connector.stmt, session);
 				break;	
 				
 			case "statistics":
-				Statistics();
+				Statistics(connector.stmt, session);
 				break;	
 				
 			case "awards":
-				Awards();
+				Awards(connector.stmt, session);
 				break;
 				
 			case "quit":
@@ -200,23 +201,23 @@ public class Main
 		return null;
 	}
 	
-	private static void Awards() 
+	private static void Awards(Statement stmt, Session session) 
 	{
 		System.out.println("This command displays a number of the most trusted and most useful users.");
                 
                 System.out.print("How many users do you want to see? ");
-		int n = sc.nextInt();		
+		int n = Integer.parseInt(sc.nextLine());		
 	}
 
-	private static void Statistics() 
+	private static void Statistics(Statement stmt, Session session) 
 	{
                 System.out.println("This command displays a number of the most popular, expensive, and highly rated housing options.");
                 
                 System.out.print("How many housings do you want to see? ");
-		int n = sc.nextInt();	
+		int n = Integer.parseInt(sc.nextLine());	
     	}
 
-	private static void Separation() 
+	private static void Separation(Statement stmt, Session session) 
 	{
 		System.out.println("This command determines the degree of separation between two users based on favorite housing.");
                 
@@ -233,15 +234,15 @@ public class Main
 		
 	}
 
-	private static void UsefulFeedback() 
+	private static void UsefulFeedback(Statement stmt, Session session) 
 	{
                 System.out.println("This command displays a number of the most useful feedbacks for a housing.");
                 
                 System.out.print("How many feedbacks do you want to see? ");
-		int n = sc.nextInt();                		
+		int n = Integer.parseInt(sc.nextLine());                		
 	}
 
-	private static void Browse() 
+	private static void Browse(Statement stmt, Session session) 
 	{		
 		System.out.println("This command displays housing options that match specified criteria.");
                 
@@ -265,24 +266,35 @@ public class Main
 		
 	}
 
-	private static void Trust() 
+	private static void Trust(Statement stmt, Session session) 
 	{
-                boolean trusted;
+                int trusted;
                 
 		System.out.println("This command lets you declare other users as trustworthy or not.");
                 
-                System.out.print("Username: ");
-		String user = sc.nextLine();
+                System.out.println("Usernames: (Comma separated list.)");
+		String usernames = sc.nextLine();
                 
-                System.out.print("Trust this user? (yes/no) ");
+                String[] userArr = usernames.split(",");
+                
+                System.out.print("Trust these users? (yes/no) ");
                 if(sc.nextLine().equalsIgnoreCase("yes"))
-                    trusted = true;
+                    trusted = 1;
                 else
-                    trusted = false;
+                    trusted = 0;
 		
+                for(String user : userArr){
+                    String query = String.format("INSERT INTO Trust VALUES ('%s', '%s', %d)", session.getLogin(), user.trim(), trusted);
+
+                    try {
+                            stmt.execute(query);
+                    } catch(Exception e) {
+                            System.err.println(e);
+                    }
+                }
 	}
 
-	private static void Usefullness() 
+	private static void Usefullness(Statement stmt, Session session) 
 	{
                 int score;
             
@@ -300,31 +312,53 @@ public class Main
                     score = 2;		
 	}
 
-	private static void Feedback() 
+	private static void Feedback(Statement stmt, Session session) 
 	{	
 		System.out.println("This command lets you record feedback for a housing.");
                 
-                String TH = ""; // Does the user specify a TH somehow, or can they only apply this when viewing a TH?
+                // TODO: Show user a list of THs they have visited.
                 
-		String date = ""; // Can we do this through SQL, grabbing the current date?
+                System.out.print("Please enter the id of the housing you'd like to review: ");
+		int hid = Integer.parseInt(sc.nextLine());
+                
+		String date = "CURDATE()"; // Tells SQL to get the current date.
                 
                 System.out.print("Rate the housing on a scale of 0-10: ");
-		int score = sc.nextInt();
+		int score = Integer.parseInt(sc.nextLine());
                 
-                System.out.println("Comment (optional):");
+                System.out.println("Comment:");
 		String text = sc.nextLine();
+                
+                String query = String.format("INSERT INTO Feedback (text, fbdate, hid, login, score) VALUES ('%s', %s, %d, '%s', %d)", text, date, hid, session.getLogin(), score);
+
+                try {
+                        stmt.execute(query);
+                } catch(Exception e) {
+                        System.err.println(e);
+                }
 	}
 
-	private static void Favorite() 
+	private static void Favorite(Statement stmt, Session session) 
 	{
 		System.out.println("This command lets you declare a housing as a favorite place to stay.");
                 
-		String TH = ""; // Does the user specify a TH somehow, or can they only apply this when viewing a TH?
+		// TODO: Show user a list of THs they have visited.
                 
-                // Set TH as favorite.
-	}
+                System.out.print("Please enter the id of the housing you'd like to favorite: ");
+		int hid = Integer.parseInt(sc.nextLine());
+                
+                String date = "CURDATE()"; // Tells SQL to get the current date.
+                
+                String query = String.format("INSERT INTO Favorites VALUES (%d, '%s', %s)", hid, session.getLogin(), date);
 
-	private static void Stays() 
+                try {
+                        stmt.execute(query);
+                } catch(Exception e) {
+                        System.err.println(e);
+                }	
+        }
+
+	private static void Stays(Statement stmt, Session session) 
 	{
 		System.out.println("This command lets you record a stay at a housing.");
 		String TH = "";	 // Does the user specify a TH somehow, or can they only apply this when viewing a TH?
@@ -350,7 +384,7 @@ public class Main
 		
 	}
 
-	private static void Reserve() 
+	private static void Reserve(Statement stmt, Session session) 
 	{		
 		// Lots of vars.
 		
