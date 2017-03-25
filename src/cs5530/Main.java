@@ -438,8 +438,19 @@ public class Main
 		}
 		
 	}
+        
+        	private static void Reserve(Statement stmt, Session session) 
+	{				
+		System.out.println("Record a reservation using TH id, if not type 0 to go back"
+				+ "(you can find id's by using our browsing command on the main screen):");
+		int pid = sc.nextInt();
+		
+		if (pid != 0) {
+			TH.reserveListing(pid, sc, stmt, session);
+		}
+        }
 
-	private static void Reserve(Statement stmt, Session session) // Done
+	private static void ReserveOld(Statement stmt, Session session) // Done
 	{			
 		System.out.println("This command lets you record a reservation to stay at a TH.");
                 
