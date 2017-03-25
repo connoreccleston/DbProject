@@ -67,7 +67,7 @@ public class Main
 				break;
 				
 			case "reserve":
-				Reserve();
+				Reserve(connector.stmt, session);
 				break;	
 				
 			case "new":
@@ -350,13 +350,19 @@ public class Main
 		
 	}
 
-	private static void Reserve() 
+	private static void Reserve(Statement stmt, Session session) 
 	{		
 		// Lots of vars.
 		
-		System.out.println("Record a reservation to stay at a TH.");
+		System.out.println("Record a reservation using TH id, if not type 0 to go back"
+				+ "(you can find id's by using our browsing command on the main screen):");
+		int pid = sc.nextInt();
+		
+		if (pid != 0) {
+			TH.reserveListing(pid, sc, stmt, session);
+		}
 		
 		// Happens at the end of a reservation, not its own command.
-		Suggestions();
+		//Suggestions();
 	}
 }
