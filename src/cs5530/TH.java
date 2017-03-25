@@ -26,7 +26,7 @@ public class TH {
 			String end_date = sc.nextLine();
                         
 			System.out.print("Please enter price-per-night: ");
-			double price = sc.nextDouble();
+			double price = Double.parseDouble(sc.nextLine());
 			
 			query = String.format("INSERT INTO Period (from_date, to_date) VALUES ('%s', '%s')",
 					start_date, end_date);

@@ -247,10 +247,10 @@ public class Main
 		System.out.println("This command displays housing options that match specified criteria.");
                 
                 System.out.print("Lowest price: ");
-		double priceLow = sc.nextDouble();
+		double priceLow = Double.parseDouble(sc.nextLine());
                 
                 System.out.print("Highest price: ");                
-		double priceHigh = sc.nextDouble();
+		double priceHigh = Double.parseDouble(sc.nextLine());
                 
                 System.out.print("City or State: ");
 		String address = sc.nextLine();
@@ -266,7 +266,7 @@ public class Main
 		
 	}
 
-	private static void Trust(Statement stmt, Session session) 
+	private static void Trust(Statement stmt, Session session) // Done
 	{
                 int trusted;
                 
@@ -288,85 +288,140 @@ public class Main
 
                     try {
                             stmt.execute(query);
+                            System.out.println("Trust recorded.");
                     } catch(Exception e) {
                             System.err.println(e);
                     }
                 }
 	}
 
-	private static void Usefullness(Statement stmt, Session session) 
+	private static void Usefullness(Statement stmt, Session session) // Done unless we change schema
 	{
-                int score;
+//                int score;
             
 		System.out.println("This command lets you assess a feedback record as useful or not.");
                 
-		String record = ""; // Does the user specify a feedback somehow, or can they only apply this when viewing a feedback?
+                System.out.print("Which feedback ID would you like to rate? ");
+		int fid = Integer.parseInt(sc.nextLine());
                 
                 System.out.println("How useful is it? (useless/useful/very useful)");
-                String input = sc.nextLine();
-                if(input.equalsIgnoreCase("useless"))
-                    score = 0;
-                else if(input.equalsIgnoreCase("useful"))
-                    score = 1;
-                else if(input.equalsIgnoreCase("very useful"))
-                    score = 2;		
-	}
+                String rating = sc.nextLine();
+                
+                // We should consider changing the schema to use ints so that averaging scores is easier.
+//                if(input.equalsIgnoreCase("useless"))
+//                    score = 0;
+//                else if(input.equalsIgnoreCase("useful"))
+//                    score = 1;
+//                else if(input.equalsIgnoreCase("very useful"))
+//                    score = 2;
 
-	private static void Feedback(Statement stmt, Session session) 
-	{	
-		System.out.println("This command lets you record feedback for a housing.");
+                String query = String.format("INSERT INTO Rates VALUES ('%s', %d, '%s')", session.getLogin(), fid, rating);
                 
-                // TODO: Show user a list of THs they have visited.
-                
-                System.out.print("Please enter the id of the housing you'd like to review: ");
-		int hid = Integer.parseInt(sc.nextLine());
-                
-		String date = "CURDATE()"; // Tells SQL to get the current date.
-                
-                System.out.print("Rate the housing on a scale of 0-10: ");
-		int score = Integer.parseInt(sc.nextLine());
-                
-                System.out.println("Comment:");
-		String text = sc.nextLine();
-                
-                String query = String.format("INSERT INTO Feedback (text, fbdate, hid, login, score) VALUES ('%s', %s, %d, '%s', %d)", text, date, hid, session.getLogin(), score);
-
                 try {
-                        stmt.execute(query);
+                    stmt.execute(query);
+                    System.out.println("Rating recorded.");
+                        
                 } catch(Exception e) {
                         System.err.println(e);
                 }
 	}
 
-	private static void Favorite(Statement stmt, Session session) 
+	private static void Feedback(Statement stmt, Session session) // Done
+	{	
+		System.out.println("This command lets you record feedback for a housing.");
+                
+                ResultSet results = null;
+		System.out.println("Here are the housings where you had a reservation.");
+		String query = "SELECT * FROM Visit WHERE login='" + session.getLogin() + "'";
+                
+                try {
+                    results = stmt.executeQuery(query);
+                    System.out.print("Housing IDs: ");
+                    while (results.next())
+                            System.out.print(results.getString("hid") + " ");
+                    
+                    System.out.print("\nPlease enter the id of the housing you'd like to review: ");
+                    int hid = Integer.parseInt(sc.nextLine());
+
+                    String date = "CURDATE()"; // Tells SQL to get the current date.
+
+                    System.out.print("Rate the housing on a scale of 0-10: ");
+                    int score = Integer.parseInt(sc.nextLine());
+
+                    System.out.println("Comment:");
+                    String text = sc.nextLine();
+
+                    query = String.format("INSERT INTO Feedback (text, fbdate, hid, login, score) VALUES ('%s', %s, %d, '%s', %d)", text, date, hid, session.getLogin(), score);
+
+                    stmt.execute(query);
+                    System.out.println("Feedback recorded.");
+                        
+                } catch(Exception e) {
+                        System.err.println(e);
+                }
+	}
+
+	private static void Favorite(Statement stmt, Session session) // Done
 	{
 		System.out.println("This command lets you declare a housing as a favorite place to stay.");
                 
 		// TODO: Show user a list of THs they have visited.
                 
-                System.out.print("Please enter the id of the housing you'd like to favorite: ");
-		int hid = Integer.parseInt(sc.nextLine());
-                
-                String date = "CURDATE()"; // Tells SQL to get the current date.
-                
-                String query = String.format("INSERT INTO Favorites VALUES (%d, '%s', %s)", hid, session.getLogin(), date);
+                ResultSet results = null;
+		System.out.println("Here are the housings where you had a reservation.");
+		String query = "SELECT * FROM Visit WHERE login='" + session.getLogin() + "'";
 
                 try {
+                    results = stmt.executeQuery(query);
+                    System.out.print("Housing IDs: ");
+                    while (results.next())
+                            System.out.print(results.getString("hid") + " ");
+                    
+                    System.out.print("\nPlease enter the id of the housing you'd like to favorite: ");
+                    int hid = Integer.parseInt(sc.nextLine());
+
+                    String date = "CURDATE()"; // Tells SQL to get the current date.
+
+                    query = String.format("INSERT INTO Favorites VALUES (%d, '%s', %s)", hid, session.getLogin(), date);
+
                         stmt.execute(query);
+                        System.out.println("Favorite recorded.");
                 } catch(Exception e) {
                         System.err.println(e);
-                }	
+                }
+                
         }
 
-	private static void Stays(Statement stmt, Session session) 
+	private static void Stays(Statement stmt, Session session) // Done
 	{
 		System.out.println("This command lets you record a stay at a housing.");
-		String TH = "";	 // Does the user specify a TH somehow, or can they only apply this when viewing a TH?
                 
-                // What other attributes need to be gathered?
+                ResultSet results = null;
+		System.out.println("Here are the housings where you had a reservation.");
+		String query = "SELECT * FROM Reserve NATURAL JOIN Period WHERE login='" + session.getLogin() + "'";
+		try {
+			results = stmt.executeQuery(query);
+			while (results.next()) {
+				String line = String.format("Housing ID %s from %s to %s (period ID: %s).", results.getString("hid"), results.getString("from_date"), results.getString("to_date"), results.getString("pid"));
+				System.out.println(line);
+			}
+                        
+                        System.out.print("Which housing ID did you stay at? ");
+                        int hid = Integer.parseInt(sc.nextLine());
+                        
+                        System.out.print("And for which period ID? ");
+                        int pid = Integer.parseInt(sc.nextLine());
+                        
+                        query = String.format("INSERT INTO Visit (login, hid, pid) VALUES ('%s', %d, %d)", session.getLogin(), hid, pid);
+                        stmt.execute(query);
+                        System.out.println("Stay recorded.");
+                        
+		} catch(Exception e) {
+			System.out.println(e);
+		}                
 	}
 
-	private static void New(Statement stmt, Session session) 
+	private static void New(Statement stmt, Session session) // Done
 	{
 		System.out.println("Please use commands \"new listing\" to create a listing "
 				+ "or \"new th\" for a new temporary housing entry");
@@ -384,12 +439,34 @@ public class Main
 		
 	}
 
-	private static void Reserve(Statement stmt, Session session) 
-	{		
-		// Lots of vars.
+	private static void Reserve(Statement stmt, Session session) // Done
+	{			
+		System.out.println("This command lets you record a reservation to stay at a TH.");
+                
+                System.out.print("Please enter the id of the housing you'd like to reserve: ");
+		int hid = Integer.parseInt(sc.nextLine());
 		
-		System.out.println("Record a reservation to stay at a TH.");
-		
+                ResultSet results = null;
+		System.out.println("Here are the availability periods for that housing.");
+		String query = "SELECT * FROM Available NATURAL JOIN Period WHERE hid='" + hid + "'";
+		try {
+			results = stmt.executeQuery(query);
+			while (results.next()) {
+				String line = String.format("From %s to %s for $%s per night. (Period ID: %s)", results.getString("from_date"), results.getString("to_date"), results.getString("price"), results.getString("pid"));
+				System.out.println(line);
+			}
+                        
+                        System.out.print("Which period ID would you like to reserve it for? ");
+                        int pid = Integer.parseInt(sc.nextLine());
+                        
+                        query = String.format("INSERT INTO Reserve (login, hid, pid) VALUES ('%s', %d, %d)", session.getLogin(), hid, pid);
+                        stmt.execute(query);
+                        System.out.println("Reservation recorded.");
+                        
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+                
 		// Happens at the end of a reservation, not its own command.
 		Suggestions();
 	}
