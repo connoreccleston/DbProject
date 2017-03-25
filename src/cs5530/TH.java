@@ -105,6 +105,8 @@ public class TH {
 						cal.add(Calendar.DATE, 1);
 						query = String.format("INSERT INTO Period (from_date, to_date) VALUES ('%s', '%s')",
 							endDate, originalEndDate);
+						
+						//TODO Create new availability with this new period
 					} else if (!startDate.equals(originalStartDate)) {
 						// Start date is greater than original start date, so set the original end date
 						// to start date - 1
