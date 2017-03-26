@@ -239,12 +239,50 @@ public class Main
                 }
 	}
 
-	private static void Statistics(Statement stmt, Session session) 
+	private static void Statistics(Statement stmt, Session session) // Done
 	{
                 System.out.println("This command displays a number of the most popular, expensive, and highly rated housing options.");
                 
+                // Most popular by number of visits
+                // String query = "SELECT hid, COUNT(*) AS number FROM Visit GROUP BY hid ORDER BY number DESC";
+                
+                // Most expensive by visit price
+                // String query = "SELECT hid, AVG(cost) AS avgCost FROM Visit GROUP BY hid ORDER BY avgCost DESC";
+
+                // Most highly rated
+                // String query = "SELECT hid, AVG(1.0 * score) AS avgScore FROM (SELECT TH.hid, score FROM TH join Feedback WHERE TH.hid = Feedback.hid)temp GROUP BY hid ORDER BY avgScore DESC";
+                
                 System.out.print("How many housings do you want to see? ");
-		int n = Integer.parseInt(sc.nextLine());	
+		int n = Integer.parseInt(sc.nextLine());
+                
+                ResultSet results = null;
+                String query = "SELECT hid, COUNT(*) AS number FROM Visit GROUP BY hid ORDER BY number DESC";                
+                try {
+                    results = stmt.executeQuery(query);
+                    int i = 0;
+                    
+                    while (i < n && results.next())
+                            System.out.println("Housing ID " + results.getString("hid") + " has been visited " + results.getString("number") + " times.");
+                    
+                    System.out.println();
+                    query = "SELECT hid, AVG(cost) AS avgCost FROM Visit GROUP BY hid ORDER BY avgCost DESC";
+                    results = stmt.executeQuery(query);
+                    i = 0;
+                    
+                    while (i < n && results.next())
+                            System.out.println("Housing ID " + results.getString("hid") + " has an average cost of $" + results.getString("avgCost") + " per person."); 
+
+                    System.out.println();
+                    query = "SELECT hid, AVG(1.0 * score) AS avgScore FROM (SELECT TH.hid, score FROM TH join Feedback WHERE TH.hid = Feedback.hid)temp GROUP BY hid ORDER BY avgScore DESC";
+                    results = stmt.executeQuery(query);
+                    i = 0;
+                    
+                    while (i < n && results.next())
+                            System.out.println("Housing ID " + results.getString("hid") + " has an average score of " + results.getString("avgScore") + ".");                     
+                    
+                } catch(Exception e) {
+                        System.err.println(e);
+                }                
     	}
 
 	private static void Separation(Statement stmt, Session session) 
@@ -476,41 +514,4 @@ public class Main
 		}
         }
 
-//	private static void ReserveOld(Statement stmt, Session session) // Done
-//	{			
-//		System.out.println("This command lets you record a reservation to stay at a TH.");
-//                
-//                System.out.print("Please enter the id of the housing you'd like to reserve: ");
-//		int hid = Integer.parseInt(sc.nextLine());
-//		
-//                ResultSet results = null;
-//		System.out.println("Here are the availability periods for that housing.");
-//		String query = "SELECT * FROM Available NATURAL JOIN Period WHERE hid='" + hid + "'";
-//		try {
-//			results = stmt.executeQuery(query);
-//			while (results.next()) {
-//				String line = String.format("From %s to %s for $%s per night. (Period ID: %s)", results.getString("from_date"), results.getString("to_date"), results.getString("price"), results.getString("pid"));
-//				System.out.println(line);
-//			}
-//                        
-//                        System.out.print("Which period ID would you like to reserve it for? ");
-//                        int pid = Integer.parseInt(sc.nextLine());
-//                        
-//                        query = String.format("INSERT INTO Reserve (login, hid, pid) VALUES ('%s', %d, %d)", session.getLogin(), hid, pid);
-//                        stmt.execute(query);
-//                        System.out.println("Reservation recorded.");
-//                        
-//		} catch(Exception e) {
-//			System.out.println(e);
-//		}
-//                
-//		// Happens at the end of a reservation, not its own command.
-//		Suggestions();
-//	}
-//
-//	private static void Suggestions() 
-//	{
-//		// Displays a list of suggested THs based on current reservation.
-//		
-//	}
 }
