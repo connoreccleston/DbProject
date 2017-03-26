@@ -132,7 +132,8 @@ public class Main
 		sc.close();
 	}
 	
-	public static Session registration(Statement stmt) { // Done        
+	public static Session registration(Statement stmt) // Done  
+        {
                 ResultSet results = null;
                 Session session = new Session();
             
@@ -176,7 +177,8 @@ public class Main
 		return null;
 	}
 	
-	public static Session login(Statement stmt) { // Done
+	public static Session login(Statement stmt) // Done
+        {
 		ResultSet results = null;
 		Session session = new Session();
 		
@@ -201,7 +203,7 @@ public class Main
 		return null;
 	}
 	
-	private static void Awards(Statement stmt, Session session) 
+	private static void Awards(Statement stmt, Session session) // Done
 	{
 		System.out.println("This command displays a number of the most trusted and most useful users.");
                 
@@ -254,12 +256,6 @@ public class Main
                 
                 System.out.print("Username 2: ");
 		String user2 = sc.nextLine();		
-	}
-
-	private static void Suggestions() 
-	{
-		// Displays a list of suggested THs based on current reservation.
-		
 	}
 
 	private static void UsefulFeedback(Statement stmt, Session session) 
@@ -352,16 +348,6 @@ public class Main
                     System.out.println("Rating recorded.");
                         
                 } catch(Exception e) {
-                        // If rating already exists, update instead.
-//                        query = String.format("UPDATE Rates SET rating = rating + %d WHERE fid = %d", score, fid);
-//                        try {
-//                            stmt.execute(query);
-//                            System.out.println("Rating recorded.");
-//                        }
-//                        catch(Exception e2){
-//                            System.err.println(e);
-//                            System.err.println(e2);
-//                        }
                         System.err.println(e);
                 }
 	}
@@ -479,7 +465,7 @@ public class Main
 		
 	}
         
-        	private static void Reserve(Statement stmt, Session session) 
+        private static void Reserve(Statement stmt, Session session) // Done
 	{				
 		System.out.println("Record a reservation using TH id, if not type 0 to go back"
 				+ "(you can find id's by using our browsing command on the main screen):");
@@ -490,35 +476,41 @@ public class Main
 		}
         }
 
-	private static void ReserveOld(Statement stmt, Session session) // Done
-	{			
-		System.out.println("This command lets you record a reservation to stay at a TH.");
-                
-                System.out.print("Please enter the id of the housing you'd like to reserve: ");
-		int hid = Integer.parseInt(sc.nextLine());
-		
-                ResultSet results = null;
-		System.out.println("Here are the availability periods for that housing.");
-		String query = "SELECT * FROM Available NATURAL JOIN Period WHERE hid='" + hid + "'";
-		try {
-			results = stmt.executeQuery(query);
-			while (results.next()) {
-				String line = String.format("From %s to %s for $%s per night. (Period ID: %s)", results.getString("from_date"), results.getString("to_date"), results.getString("price"), results.getString("pid"));
-				System.out.println(line);
-			}
-                        
-                        System.out.print("Which period ID would you like to reserve it for? ");
-                        int pid = Integer.parseInt(sc.nextLine());
-                        
-                        query = String.format("INSERT INTO Reserve (login, hid, pid) VALUES ('%s', %d, %d)", session.getLogin(), hid, pid);
-                        stmt.execute(query);
-                        System.out.println("Reservation recorded.");
-                        
-		} catch(Exception e) {
-			System.out.println(e);
-		}
-                
-		// Happens at the end of a reservation, not its own command.
-		Suggestions();
-	}
+//	private static void ReserveOld(Statement stmt, Session session) // Done
+//	{			
+//		System.out.println("This command lets you record a reservation to stay at a TH.");
+//                
+//                System.out.print("Please enter the id of the housing you'd like to reserve: ");
+//		int hid = Integer.parseInt(sc.nextLine());
+//		
+//                ResultSet results = null;
+//		System.out.println("Here are the availability periods for that housing.");
+//		String query = "SELECT * FROM Available NATURAL JOIN Period WHERE hid='" + hid + "'";
+//		try {
+//			results = stmt.executeQuery(query);
+//			while (results.next()) {
+//				String line = String.format("From %s to %s for $%s per night. (Period ID: %s)", results.getString("from_date"), results.getString("to_date"), results.getString("price"), results.getString("pid"));
+//				System.out.println(line);
+//			}
+//                        
+//                        System.out.print("Which period ID would you like to reserve it for? ");
+//                        int pid = Integer.parseInt(sc.nextLine());
+//                        
+//                        query = String.format("INSERT INTO Reserve (login, hid, pid) VALUES ('%s', %d, %d)", session.getLogin(), hid, pid);
+//                        stmt.execute(query);
+//                        System.out.println("Reservation recorded.");
+//                        
+//		} catch(Exception e) {
+//			System.out.println(e);
+//		}
+//                
+//		// Happens at the end of a reservation, not its own command.
+//		Suggestions();
+//	}
+//
+//	private static void Suggestions() 
+//	{
+//		// Displays a list of suggested THs based on current reservation.
+//		
+//	}
 }
