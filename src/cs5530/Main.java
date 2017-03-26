@@ -217,14 +217,14 @@ public class Main
 		int n = Integer.parseInt(sc.nextLine());	
                 
                 ResultSet results = null;
-		String query = "SELECT login2, COUNT(*) AS rating FROM Trust WHERE isTrusted = 1 GROUP BY login2 ORDER BY rating DESC";
-                
+		//String query = "SELECT login2, COUNT(*) AS rating FROM Trust WHERE isTrusted = 1 GROUP BY login2 ORDER BY rating DESC";
+                String query = "SELECT login2, SUM(isTrusted) AS rating FROM Trust GROUP BY login2 ORDER BY rating DESC";                
                 try {
                     results = stmt.executeQuery(query);
                     int i = 0;
                     
                     while (i < n && results.next())
-                            System.out.println("User " + results.getString("login2") + " is trusted by " + results.getString("rating") + " other users.");
+                            System.out.println("User " + results.getString("login2") + " has a trust rating of " + results.getString("rating") + ".");
                     
                     System.out.println();
                     query = "SELECT login, AVG(1.0 * rating) AS avgRate FROM (SELECT fid, rating FROM Rates)temp NATURAL JOIN Feedback GROUP BY login ORDER BY avgRate DESC";
@@ -308,7 +308,7 @@ public class Main
                 if(sc.nextLine().equalsIgnoreCase("yes"))
                     trusted = 1;
                 else
-                    trusted = 0;
+                    trusted = -1;
 		
                 for(String user : userArr){
                     String query = String.format("INSERT INTO Trust VALUES ('%s', '%s', %d)", session.getLogin(), user.trim(), trusted);
