@@ -223,16 +223,20 @@ public class Main
                     results = stmt.executeQuery(query);
                     int i = 0;
                     
-                    while (i < n && results.next())
+                    while (i < n && results.next()){
                             System.out.println("User " + results.getString("login2") + " has a trust rating of " + results.getString("rating") + ".");
+                            i++;
+                    }
                     
                     System.out.println();
                     query = "SELECT login, AVG(1.0 * rating) AS avgRate FROM (SELECT fid, rating FROM Rates)temp NATURAL JOIN Feedback GROUP BY login ORDER BY avgRate DESC";
                     results = stmt.executeQuery(query);
                     i = 0;
                     
-                    while (i < n && results.next())
+                    while (i < n && results.next()){
                             System.out.println("User " + results.getString("login") + " has an average usefullness of " + results.getString("avgRate") + ".");  
+                            i++;
+                    }
                     
                 } catch(Exception e) {
                         System.err.println(e);
@@ -261,24 +265,30 @@ public class Main
                     results = stmt.executeQuery(query);
                     int i = 0;
                     
-                    while (i < n && results.next())
+                    while (i < n && results.next()){
                             System.out.println("Housing ID " + results.getString("hid") + " has been visited " + results.getString("number") + " times.");
+                            i++;
+                    }
                     
                     System.out.println();
                     query = "SELECT hid, AVG(cost) AS avgCost FROM Visit GROUP BY hid ORDER BY avgCost DESC";
                     results = stmt.executeQuery(query);
                     i = 0;
                     
-                    while (i < n && results.next())
+                    while (i < n && results.next()){
                             System.out.println("Housing ID " + results.getString("hid") + " has an average cost of $" + results.getString("avgCost") + " per person."); 
+                            i++;
+                    }
 
                     System.out.println();
                     query = "SELECT hid, AVG(1.0 * score) AS avgScore FROM (SELECT TH.hid, score FROM TH join Feedback WHERE TH.hid = Feedback.hid)temp GROUP BY hid ORDER BY avgScore DESC";
                     results = stmt.executeQuery(query);
                     i = 0;
                     
-                    while (i < n && results.next())
+                    while (i < n && results.next()){
                             System.out.println("Housing ID " + results.getString("hid") + " has an average score of " + results.getString("avgScore") + ".");                     
+                            i++;
+                    }
                     
                 } catch(Exception e) {
                         System.err.println(e);
@@ -287,24 +297,51 @@ public class Main
 
 	private static void Separation(Statement stmt, Session session) 
 	{
+            
+                // https://utah.instructure.com/courses/429026/discussion_topics/1959506
+                // http://stackoverflow.com/questions/9468363/degrees-of-separation-query
+            
 		System.out.println("This command determines the degree of separation between two users based on favorite housing.");
                 
                 System.out.print("Username 1: ");		
                 String user1 = sc.nextLine();
                 
                 System.out.print("Username 2: ");
-		String user2 = sc.nextLine();		
+		String user2 = sc.nextLine();
+                
+                // Finds 1 degree:
+                // select f1.login as login1, f2.login as login2 from Favorites f1 join Favorites f2 where f1.hid = f2.hid and f1.login != f2.login
+                
 	}
 
 	private static void UsefulFeedback(Statement stmt, Session session) 
 	{
+                // select * from Feedback natural join (select fid, avg(1.0 * rating) as avgRate from Rates group by fid)temp where hid = 6 order by avgRate desc
+            
                 System.out.println("This command displays a number of the most useful feedbacks for a housing.");
                 
-                System.out.print("\nPlease enter the id of the housing you'd like to review: ");
+                System.out.print("Please enter the id of the housing you'd like to review: ");
                 int hid = Integer.parseInt(sc.nextLine());
                 
                 System.out.print("How many feedbacks do you want to see? ");
-		int n = Integer.parseInt(sc.nextLine());                		
+		int n = Integer.parseInt(sc.nextLine());     
+
+                ResultSet results = null;
+                String query = "SELECT * FROM Feedback NATURAL JOIN (SELECT fid, AVG(1.0 * rating) AS avgRate FROM Rates GROUP BY fid)temp WHERE hid = " + hid + " ORDER BY avgRate DESC";                
+                try {
+                    results = stmt.executeQuery(query);
+                    int i = 0;
+                    
+                    while (i < n && results.next()) {
+                            System.out.println("\nUser " + results.getString("login") + " gave this housing a score of " + results.getString("score") + " on " + results.getString("fbdate") + ".");
+                            System.out.println("Comment: \"" + results.getString("text") + "\"");
+                            System.out.println("Other users gave this feedback (ID: " + results.getString("fid") + ") an average score of " + results.getString("avgRate") + ".");
+                            i++;
+                    }
+                    
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
 	}
 
 	private static void Browse(Statement stmt, Session session) 
