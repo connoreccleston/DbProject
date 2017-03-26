@@ -61,7 +61,7 @@ public class TH {
 		String endDate = sc.nextLine();
 		
 		//TODO: Display a listing of all dates this TH is available
-		//TODO: Make sure a user can't enter a reservation that's in between a date multiple times.
+		//TODO: Make sure a user can't enter an availability that's in between a date multiple times.
 		String query = "SELECT p.pid, from_date, to_date, a.price, datediff(p.to_date, p.from_date) * a.price as cost"
 				+ " FROM Available a, Period p"
 				+ " where a.pid = p.pid"
@@ -73,11 +73,13 @@ public class TH {
 			int pid = 0;
 			String originalStartDate = "";
 			String originalEndDate = "";
+			double pricePerNight = 0.0;
 			results = stmt.executeQuery(query);
 			while(results.next()) {
 				String display = String.format("Price per night: %f for this date range, type yes to reserve or no to go back",
 						results.getFloat("price"));
 				pid = results.getInt("pid");
+				pricePerNight = results.getDouble("price");
 				price = (int) results.getDouble("cost");
 				System.out.println(display);
 				originalStartDate = results.getString("from_date");
@@ -90,23 +92,27 @@ public class TH {
 				if (reply.equalsIgnoreCase("yes")) {
 					DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 					Calendar cal = Calendar.getInstance();
-					//cal.setTime(df.parse(startDate));
-					//cal.add(Calendar.DATE, 1);
+
 					//Update the availability period
 					if (!startDate.equals(originalStartDate) && 
 							!endDate.equals(originalEndDate)) { 
 						//First update existing date range to end on the start date - 1
 						cal.setTime(df.parse(startDate));
 						cal.add(Calendar.DATE, -1);
-						String query1 = "update Period set to_date=" + df.format(cal.getTime()) + " where pid=" + pid;
+						String query1 = "update Period set to_date='" + df.format(cal.getTime()) + "' where pid=" + pid;
 						stmt.execute(query1);
 						//Insert a new available range from end date + 1 to the original posting end date
 						cal.setTime(df.parse(endDate));
 						cal.add(Calendar.DATE, 1);
-						query = String.format("INSERT INTO Period (from_date, to_date) VALUES ('%s', '%s')",
-							endDate, originalEndDate);
-						
-						//TODO Create new availability with this new period
+						String query2 = String.format("INSERT INTO Period (from_date, to_date) VALUES ('%s', '%s')",
+							df.format(cal.getTime()), originalEndDate);
+						stmt.execute(query2);
+						//Get period id so we can create a new availability entry
+						results = stmt.getGeneratedKeys();
+						results.last();
+						int newPid = results.getInt(1);
+						query = String.format("INSERT INTO Available VALUES (%d, %d, %f)",
+								hid, newPid, pricePerNight);
 					} else if (!startDate.equals(originalStartDate)) {
 						// Start date is greater than original start date, so set the original end date
 						// to start date - 1
@@ -139,11 +145,14 @@ public class TH {
 					query = String.format("INSERT INTO Reserve VALUES ('%s', '%d', '%d', '%d')",
 					session.getLogin(), hid, pid, price);
 					stmt.execute(query);
+					System.out.println("TH has been reserved!");
 				}
+				
+			// No available listings found
+			} else {
+				System.out.println("No listings for that TH are available for that date range.");
 			}
 
-			
-			System.out.println("TH has been listed!");
 		} catch(Exception e) {
 			System.out.println(e);
 		}
