@@ -132,7 +132,7 @@ public class Main
 		sc.close();
 	}
 	
-	public static Session registration(Statement stmt) {            
+	public static Session registration(Statement stmt) { // Done        
                 ResultSet results = null;
                 Session session = new Session();
             
@@ -176,7 +176,7 @@ public class Main
 		return null;
 	}
 	
-	public static Session login(Statement stmt) {
+	public static Session login(Statement stmt) { // Done
 		ResultSet results = null;
 		Session session = new Session();
 		
@@ -205,8 +205,36 @@ public class Main
 	{
 		System.out.println("This command displays a number of the most trusted and most useful users.");
                 
+                // Most trusted:
+                // SELECT login2, COUNT(*) AS rating FROM Trust WHERE isTrusted = 1 GROUP BY login2 ORDER BY rating DESC
+                
+                // Most useful by average:
+                // SELECT login, AVG(1.0 * rating) AS avgRate FROM (SELECT fid, rating FROM Rates)temp NATURAL JOIN Feedback GROUP BY login ORDER BY avgRate DESC
+                
                 System.out.print("How many users do you want to see? ");
-		int n = Integer.parseInt(sc.nextLine());		
+		int n = Integer.parseInt(sc.nextLine());	
+                
+                ResultSet results = null;
+		String query = "SELECT login2, COUNT(*) AS rating FROM Trust WHERE isTrusted = 1 GROUP BY login2 ORDER BY rating DESC";
+                
+                try {
+                    results = stmt.executeQuery(query);
+                    int i = 0;
+                    
+                    while (i < n && results.next())
+                            System.out.println("User " + results.getString("login2") + " is trusted by " + results.getString("rating") + " other users.");
+                    
+                    System.out.println();
+                    query = "SELECT login, AVG(1.0 * rating) AS avgRate FROM (SELECT fid, rating FROM Rates)temp NATURAL JOIN Feedback GROUP BY login ORDER BY avgRate DESC";
+                    results = stmt.executeQuery(query);
+                    i = 0;
+                    
+                    while (i < n && results.next())
+                            System.out.println("User " + results.getString("login") + " has an average usefullness of " + results.getString("avgRate") + ".");  
+                    
+                } catch(Exception e) {
+                        System.err.println(e);
+                }
 	}
 
 	private static void Statistics(Statement stmt, Session session) 
@@ -237,6 +265,9 @@ public class Main
 	private static void UsefulFeedback(Statement stmt, Session session) 
 	{
                 System.out.println("This command displays a number of the most useful feedbacks for a housing.");
+                
+                System.out.print("\nPlease enter the id of the housing you'd like to review: ");
+                int hid = Integer.parseInt(sc.nextLine());
                 
                 System.out.print("How many feedbacks do you want to see? ");
 		int n = Integer.parseInt(sc.nextLine());                		
@@ -295,9 +326,9 @@ public class Main
                 }
 	}
 
-	private static void Usefullness(Statement stmt, Session session) // Done unless we change schema
+	private static void Usefullness(Statement stmt, Session session) // Done
 	{
-//                int score;
+                int score = 0;
             
 		System.out.println("This command lets you assess a feedback record as useful or not.");
                 
@@ -307,21 +338,30 @@ public class Main
                 System.out.println("How useful is it? (useless/useful/very useful)");
                 String rating = sc.nextLine();
                 
-                // We should consider changing the schema to use ints so that averaging scores is easier.
-//                if(input.equalsIgnoreCase("useless"))
-//                    score = 0;
-//                else if(input.equalsIgnoreCase("useful"))
-//                    score = 1;
-//                else if(input.equalsIgnoreCase("very useful"))
-//                    score = 2;
+                if(rating.equalsIgnoreCase("useless"))
+                    score = 0;
+                else if(rating.equalsIgnoreCase("useful"))
+                    score = 1;
+                else if(rating.equalsIgnoreCase("very useful"))
+                    score = 2;
 
-                String query = String.format("INSERT INTO Rates VALUES ('%s', %d, '%s')", session.getLogin(), fid, rating);
+                String query = String.format("INSERT INTO Rates VALUES ('%s', %d, %d)", session.getLogin(), fid, score);
                 
                 try {
                     stmt.execute(query);
                     System.out.println("Rating recorded.");
                         
                 } catch(Exception e) {
+                        // If rating already exists, update instead.
+//                        query = String.format("UPDATE Rates SET rating = rating + %d WHERE fid = %d", score, fid);
+//                        try {
+//                            stmt.execute(query);
+//                            System.out.println("Rating recorded.");
+//                        }
+//                        catch(Exception e2){
+//                            System.err.println(e);
+//                            System.err.println(e2);
+//                        }
                         System.err.println(e);
                 }
 	}
