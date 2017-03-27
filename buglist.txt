@@ -1,0 +1,57 @@
+MAJOR BUGS:
+
+Able to favorite housing you've never visited!
+
+Able to leave feedback for housing you've never visited!
+
+Can leave feedback multiple times for the same TH!
+
+Usefulness is broken!
+
+Separation is broken (fails check 3)!
+
+TH listing is not removed from availability when someone reserves it!
+
+
+
+ALL BUGS:
+
+Exiting reserve with ID 0 has nextInt error.
+
+Add "0 to go back" to other methods if there's time.
+
+Able to favorite housing you've never visited!
+
+Able to leave feedback for housing you've never visited!
+
+Can leave feedback multiple times for the same TH!
+
+Can't change whether you trust a user or not.
+
+Sometimes called TH, sometimes called housing (option), make consistant.
+
+Need to trim() keywords before searching table for them or inserting them.
+
+Exceptions/errors in TH.java use System.out instead of System.err.
+
+No space after colon when asking for TH's URL or after asking for keyword list.
+
+Missing periods in several places in TH.java.
+
+Period is created in table even if listing is not added.
+
+Doubles printed from SQL output have 6 decimal places, should probably be 2.
+
+Making a reservation causes the period it was previously available to become 0 days long.
+
+System.out and System.err printing out of order, don't know if this can be fixed.
+
+When you record a stay, you enter a price, should this instead be copied from your reservation?
+
+Cost in Visit is an int, not a double.
+
+Usefulness is broken!
+
+Separation is broken (fails check 3)!
+
+TH listing is not removed from availability when someone reserves it!
