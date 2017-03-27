@@ -356,7 +356,7 @@ public class Main
 		String user2 = sc.nextLine();
                 
                 String query1 = "CREATE OR REPLACE VIEW CommonFavs AS SELECT f1.login AS login1, f2.login AS login2 FROM Favorites f1 JOIN Favorites f2 WHERE f1.hid = f2.hid AND f1.login != f2.login";
-                String query2 = "SELECT COUNT(*) AS DoesExist FROM CommonFavs f1 JOIN CommonFavs f2 ON f2.login1 = f1.login2 WHERE f1.login1 = '" + user1 + "' AND f2.login2 = '" + user2 + "'";
+                String query2 = String.format("SELECT COUNT(*) AS DoesExist FROM CommonFavs f1 JOIN CommonFavs f2 ON f2.login1 = f1.login2 WHERE f1.login1 = '%s' AND f2.login2 = '%s'", user1, user2);
                 ResultSet results = null;
                 int DoesExist = 0;
                 
@@ -364,22 +364,22 @@ public class Main
                 try {
                         stmt.execute(query1);
                 } catch (Exception e) {
-                        System.err.println("1 "+e);
+                        System.err.println("1 " + e);
                 } try {
                         results = stmt.executeQuery(query2);
                 } catch (Exception e) {
-                        System.err.println("2 "+e);
+                        System.err.println("2 " + e);
                 } try {                    
                         DoesExist = Integer.parseInt(results.getString("DoesExist"));
                 } catch (Exception e) {
-                        System.err.println("3 "+e);
+                        System.err.println("3 " + e);
                 } try {    
                         if(DoesExist != 0)
                             System.out.println("Specified users are separated by 2 degrees of separation.");
                         else
                             System.out.println("Specified users are not separated by 2 degrees of separation.");                    
                 } catch (Exception e) {
-                        System.err.println("4 "+e);
+                        System.err.println("4 " + e);
                 }             
 	}
 
@@ -397,7 +397,7 @@ public class Main
 		int n = Integer.parseInt(sc.nextLine());     
 
                 ResultSet results = null;
-                String query = "SELECT * FROM Feedback NATURAL JOIN (SELECT fid, AVG(1.0 * rating) AS avgRate FROM Rates GROUP BY fid)temp WHERE hid = " + hid + " ORDER BY avgRate DESC";  
+                String query = String.format("SELECT * FROM Feedback NATURAL JOIN (SELECT fid, AVG(1.0 * rating) AS avgRate FROM Rates GROUP BY fid)temp WHERE hid = %d ORDER BY avgRate DESC", hid);  
                 
                 try 
                 {
@@ -519,7 +519,7 @@ public class Main
                 
                 ResultSet results = null;
 		System.out.println("Here are the housings where you had a reservation.");
-		String query = "SELECT * FROM Visit WHERE login='" + session.getLogin() + "'";
+		String query = String.format("SELECT * FROM Visit WHERE login = '%s'", session.getLogin());
                 
                 try 
                 {
@@ -558,7 +558,7 @@ public class Main
                                 
                 ResultSet results = null;
 		System.out.println("Here are the housings where you had a reservation.");
-		String query = "SELECT * FROM Visit WHERE login='" + session.getLogin() + "'";
+		String query = String.format("SELECT * FROM Visit WHERE login = '%s'", session.getLogin());
 
                 try 
                 {
@@ -590,7 +590,7 @@ public class Main
                 
                 ResultSet results = null;
 		System.out.println("Here are the housings where you had a reservation.");
-		String query = "SELECT * FROM Reserve NATURAL JOIN Period WHERE login='" + session.getLogin() + "'";
+		String query = String.format("SELECT * FROM Reserve NATURAL JOIN Period WHERE login = '%s'", session.getLogin());
                 
 		try 
                 {
