@@ -422,66 +422,63 @@ public class Main
 	}
 
 	private static void Browse(Statement stmt, Session session) 
-	{ 
+	{
 		double priceLow = 0.0;
 		double priceHigh = 0.0;
 		String query = "SELECT t.hid, t.name, t.category, t.address, t.phone_num, t.year_built, "
-				+ "AVG(a.price) as average_price, t.URL, AVG(f.score) as average_score"
-						+ " FROM TH t"
-						+ " left join Available a on t.hid = a.hid"
-						+ " left join HasKeywords hk on t.hid = hk.hid"
-						+ " left join Feedback f on t.hid = f.hid where";
+				+ "AVG(a.price) as average_price, t.URL, AVG(f.score) as average_score" + " FROM TH t"
+				+ " left join Available a on t.hid = a.hid" + " left join HasKeywords hk on t.hid = hk.hid"
+				+ " left join Feedback f on t.hid = f.hid where";
 		String conditions = "";
 		System.out.println("This command displays housing options that match specified criteria.");
 		System.out.println("Press enter if you'd like to ignore that filter.");
-        System.out.print("Lowest price: ");
-		String priceLowString = sc.nextLine();                
-        System.out.print("Highest price: ");                
-		String priceHighString = sc.nextLine();                
-        System.out.print("City or State: ");
-		String address = sc.nextLine();                
-        System.out.print("Comma separated list of keywords: ");
-		String keywords = sc.nextLine();                
-        System.out.print("Category: ");
-		String category = sc.nextLine(); 
+		System.out.print("Lowest price: ");
+		String priceLowString = sc.nextLine();
+		System.out.print("Highest price: ");
+		String priceHighString = sc.nextLine();
+		System.out.print("City or State: ");
+		String address = sc.nextLine();
+		System.out.print("Comma separated list of keywords: ");
+		String keywords = sc.nextLine();
+		System.out.print("Category: ");
+		String category = sc.nextLine();
 		System.out.println("These following options must be filled in:");
 		System.out.print("Which conjuction to use? (and, or)");
 		String conjuction = sc.nextLine();
-        System.out.print("Sorting method (price, feedback, trusted feedback): ");
+		System.out.print("Sorting method (price, feedback, trusted feedback): ");
 		String sortBy = sc.nextLine();
-		
+
 		if (!priceLowString.equals("") && !priceHighString.equals("")) {
 			priceLow = Double.parseDouble(priceLowString);
 			priceHigh = Double.parseDouble(priceHighString);
-			conditions += String.format(" %s a.price >= %f and a.price <= %f", 
-					conjuction, priceLow, priceHigh); 
+			conditions += String.format(" %s a.price >= %f and a.price <= %f", conjuction, priceLow, priceHigh);
 		}
-		
+
 		if (!address.equals("")) {
 			conditions += String.format(" %s t.address like '%%s%'", conjuction, address);
 		}
-		
+
 		if (!category.equals("")) {
 			conditions += String.format(" %s t.category = '%s'", conjuction, category);
 		}
-		
-		if(!keywords.equals("")) {
+
+		if (!keywords.equals("")) {
 			String keywordsQuoted = "";
 			for (String keyword : keywords.split(",")) {
-				keywordsQuoted += "'"+keyword.trim()+"',";
+				keywordsQuoted += "'" + keyword.trim() + "',";
 			}
-			//Strip last comma
+			// Strip last comma
 			keywordsQuoted = keywordsQuoted.substring(0, keywordsQuoted.length() - 1);
-			conditions += String.format(" %s hk.wid in (SELECT wid FROM Keywords WHERE"
-					+ " word in (%s))", conjuction, keywordsQuoted);
+			conditions += String.format(" %s hk.wid in (SELECT wid FROM Keywords WHERE" + " word in (%s))", conjuction,
+					keywordsQuoted);
 		}
-		
-		//Remove the leading conjuction
+
+		// Remove the leading conjuction
 		if (conditions.startsWith(" and"))
 			conditions = conditions.substring(4);
 		else if (conditions.startsWith(" or"))
 			conditions = conditions.substring(3);
-		//Add conditions and group by to avoid duplicate THs being listed
+		// Add conditions and group by to avoid duplicate THs being listed
 		query += conditions;
 		query += " group by t.hid, t.name, t.category, t.address, t.phone_num, t.year_built, t.URL";
 
@@ -491,17 +488,17 @@ public class Main
 			query += " order by AVG(f.score)";
 		} else if (sortBy.equals("trusted feedback")) {
 		}
-		
+
 		try {
 			ResultSet results = stmt.executeQuery(query);
 			while (results.next()) {
 				String resultString = String.format(
 						"ID: %d, Name: %s, Category: %s, Address: %s, Phone Number: %s"
-						+ " Year Built: %d, URL: %s, Average Price: %f, Average Score: %f",
+								+ " Year Built: %d, URL: %s, Average Price: %f, Average Score: %f",
 						results.getInt("hid"), results.getString("name"), results.getString("category"),
-						results.getString("address"), results.getString("phone_num"),
-						results.getInt("year_built"), results.getString("URL"),
-						results.getDouble("average_price"), results.getDouble("average_score"));
+						results.getString("address"), results.getString("phone_num"), results.getInt("year_built"),
+						results.getString("URL"), results.getDouble("average_price"),
+						results.getDouble("average_score"));
 				System.out.println(resultString);
 			}
 		} catch (SQLException e) {
