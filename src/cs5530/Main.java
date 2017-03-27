@@ -1,6 +1,7 @@
 package cs5530;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
@@ -243,27 +244,80 @@ public class Main
 	}
 
 	private static void Browse(Statement stmt, Session session) 
-	{		
+	{ 
+		double priceLow = 0.0;
+		double priceHigh = 0.0;
+		String query = "SELECT t.hid, t.name, t.category, t.address, t.phone_num, t.year_built, AVG(a.price), t.URL"
+						+ "FROM TH t"
+						+ "join Available a on t.hid = a.hid"
+						+ "left join Feedback f on t.hid = f.hid ";
+		String conditions = "";
 		System.out.println("This command displays housing options that match specified criteria.");
-                
-                System.out.print("Lowest price: ");
-		double priceLow = Double.parseDouble(sc.nextLine());
-                
-                System.out.print("Highest price: ");                
-		double priceHigh = Double.parseDouble(sc.nextLine());
-                
-                System.out.print("City or State: ");
-		String address = sc.nextLine();
-                
-                System.out.println("Comma separated list of keywords: ");
-		String keywords = sc.nextLine();
-                
-                System.out.print("Category: ");
-		String category = sc.nextLine();
-                
-                System.out.print("Sorting method (price, feedback, trusted feedback): ");
+		System.out.println("Press enter if you'd like to ignore that filter.");
+        System.out.print("Lowest price: ");
+		String priceLowString = sc.nextLine();                
+        System.out.print("Highest price: ");                
+		String priceHighString = sc.nextLine();                
+        System.out.print("City or State: ");
+		String address = sc.nextLine();                
+        System.out.print("Comma separated list of keywords: ");
+		String keywords = sc.nextLine();                
+        System.out.print("Category: ");
+		String category = sc.nextLine(); 
+		System.out.println("These following options must be filled in:");
+		System.out.print("Which conjuction to use? (and, or)");
+		String conjuction = sc.nextLine();
+        System.out.print("Sorting method (price, feedback, trusted feedback): ");
 		String sortBy = sc.nextLine();
 		
+		if (!priceLowString.equals("") && !priceHighString.equals("")) {
+			priceLow = Double.parseDouble(priceLowString);
+			priceHigh = Double.parseDouble(priceHighString);
+			conditions += String.format(" %s a.price >= %f and a.price <= %f", 
+					conjuction, priceLow, priceHigh); 
+		}
+		
+		if (!address.equals("")) {
+			conditions += String.format(" %s t.address = '%s'", conjuction, address);
+		}
+		
+		if (!category.equals("")) {
+			conditions += String.format(" %s t.category = '%s'", conjuction, category);
+		}
+		
+		//Remove the leading conjuction
+		if (conditions.startsWith(" and"))
+			conditions = conditions.substring(4);
+		else if (conditions.startsWith(" or"))
+			conditions = conditions.substring(3);
+		//Add conditions and group by to avoid duplicate THs being listed
+		query += conditions;
+		query += " group by t.hid, t.name, t.category, t.address, t.phone_num, t.year_built, t.URL";
+
+		if (sortBy.equals("price")) {
+			query += " order by AVG(price)";
+		} else if (sortBy.equals("feedback")) {
+			query += " order by AVG(f.score)";
+		} else if (sortBy.equals("trusted feedback")) {
+		}
+		
+		try {
+			System.out.println(query);
+			ResultSet results = stmt.executeQuery(query);
+			while (results.next()) {
+				String resultString = String.format(
+						"ID: %d, Name: %s, Category: %s, Address: %s, Phone Number: %s"
+						+ " Year Built: %d, URL: %s",
+						results.getInt("hid"), results.getString("name"), results.getString("category"),
+						results.getString("address"), results.getString("phone_num"),
+						results.getInt("year_built"), results.getString("URL"));
+				System.out.println(resultString);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 		
 	}
 
 	private static void Trust(Statement stmt, Session session) // Done
