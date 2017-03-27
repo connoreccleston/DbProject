@@ -364,24 +364,20 @@ public class Main
                 int DoesExist = 0;
                 
                 // Still testing this to see which statement breaks it.
-                try {
+                try 
+                {
                         stmt.execute(query1);
-                } catch (Exception e) {
-                        System.err.println("1 " + e);
-                } try {
                         results = stmt.executeQuery(query2);
-                } catch (Exception e) {
-                        System.err.println("2 " + e);
-                } try {                    
+                        results.next();               
                         DoesExist = Integer.parseInt(results.getString("DoesExist"));
-                } catch (Exception e) {
-                        System.err.println("3 " + e);
-                } try {    
+                        
                         if(DoesExist != 0)
                             System.out.println("Specified users are separated by 2 degrees of separation.");
                         else
                             System.out.println("Specified users are not separated by 2 degrees of separation.");                    
-                } catch (Exception e) {
+                } 
+                catch (Exception e) 
+                {
                         System.err.println("4 " + e);
                 }             
 	}
@@ -568,6 +564,7 @@ public class Main
                 try 
                 {
                         results = stmt.executeQuery(query);
+                        results.next();               
                         if(results.getString("login").equals(session.getLogin()))
                         {
                                 System.err.println("You cannot rate your own feedbacks.");

@@ -6,12 +6,6 @@ Able to leave feedback for housing you've never visited!
 
 Can leave feedback multiple times for the same TH!
 
-Usefulness is broken!
-
-Separation is broken (fails check 3)!
-
-TH listing is not removed from availability when someone reserves it!
-
 
 
 ALL BUGS:
@@ -42,16 +36,8 @@ Period is created in table even if listing is not added.
 
 Doubles printed from SQL output have 6 decimal places, should probably be 2.
 
-Making a reservation causes the period it was previously available to become 0 days long.
-
 System.out and System.err printing out of order, don't know if this can be fixed.
 
 When you record a stay, you enter a price, should this instead be copied from your reservation?
 
 Cost in Visit is an int, not a double.
-
-Usefulness is broken!
-
-Separation is broken (fails check 3)!
-
-TH listing is not removed from availability when someone reserves it!
