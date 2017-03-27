@@ -13,12 +13,16 @@ public class Main
 		Connector connector = null;
                 Session session = null;
 		
-		try {
-			connector = new Connector();
-		} catch(Exception e) {
-			System.err.println("Database inaccessible.");
-			System.exit(1);
-		}
+                boolean connected = false;
+                while(!connected){
+                    try {
+                            connector = new Connector();
+                            connected = true;
+                    } catch(Exception e) {
+                            System.err.println("Database inaccessible.\n");
+                            //System.exit(1);
+                    }
+                }
 		
 		String input;
 		boolean loopLogin = true;
@@ -31,7 +35,7 @@ public class Main
 			
 			if(input.equals("login"))
 			{
-				session = login(connector.stmt);
+				session = Login(connector.stmt);
 				
 				if (session != null) {
 					loopLogin = false;
@@ -42,7 +46,7 @@ public class Main
 			}
 			else if(input.equals("register"))
 			{
-				session = registration(connector.stmt);
+				session = Registration(connector.stmt);
 				loopLogin = false;
 			}
 			else
@@ -132,7 +136,7 @@ public class Main
 		sc.close();
 	}
 	
-	public static Session registration(Statement stmt) // Done  
+	public static Session Registration(Statement stmt) // Done  
         {
                 ResultSet results = null;
                 Session session = new Session();
@@ -177,7 +181,7 @@ public class Main
 		return null;
 	}
 	
-	public static Session login(Statement stmt) // Done
+	public static Session Login(Statement stmt) // Done
         {
 		ResultSet results = null;
 		Session session = new Session();
@@ -295,13 +299,13 @@ public class Main
                 }                
     	}
 
-	private static void Separation(Statement stmt, Session session) 
+	private static void Separation(Statement stmt, Session session) // Should work, but having issues due to server. Test again.
 	{
             
                 // https://utah.instructure.com/courses/429026/discussion_topics/1959506
                 // http://stackoverflow.com/questions/9468363/degrees-of-separation-query
             
-		System.out.println("This command determines the degree of separation between two users based on favorite housing.");
+		System.out.println("This command determines whether 2 users are separated by 2 degrees of separation based on favorite housing.");
                 
                 System.out.print("Username 1: ");		
                 String user1 = sc.nextLine();
@@ -312,9 +316,34 @@ public class Main
                 // Finds 1 degree:
                 // select f1.login as login1, f2.login as login2 from Favorites f1 join Favorites f2 where f1.hid = f2.hid and f1.login != f2.login
                 
+                String query1 = "CREATE OR REPLACE VIEW CommonFavs AS SELECT f1.login AS login1, f2.login AS login2 FROM Favorites f1 JOIN Favorites f2 WHERE f1.hid = f2.hid AND f1.login != f2.login";
+                String query2 = "SELECT COUNT(*) AS DoesExist FROM CommonFavs f1 JOIN CommonFavs f2 ON f2.login1 = f1.login2 WHERE f1.login1 = '" + user1 + "' AND f2.login2 = '" + user2 + "'";
+                ResultSet results = null;
+                int DoesExist = 0;
+                try {
+                    stmt.execute(query1);
+                } catch (Exception e) {
+                    System.err.println("1"+e);
+                } try {
+                    results = stmt.executeQuery(query2);
+                } catch (Exception e) {
+                    System.err.println("2"+e);
+                } try {                    
+                    DoesExist = Integer.parseInt(results.getString("DoesExist"));
+                } catch (Exception e) {
+                    System.err.println("3"+e);
+                } try {    
+                    if(DoesExist != 0)
+                        System.out.println("Specified users are separated by 2 degrees of separation.");
+                    else
+                        System.out.println("Specified users are not separated by 2 degrees of separation.");
+                    
+                } catch (Exception e) {
+                    System.err.println("4"+e);
+                }             
 	}
 
-	private static void UsefulFeedback(Statement stmt, Session session) 
+	private static void UsefulFeedback(Statement stmt, Session session) // Done
 	{
                 // select * from Feedback natural join (select fid, avg(1.0 * rating) as avgRate from Rates group by fid)temp where hid = 6 order by avgRate desc
             
@@ -344,7 +373,7 @@ public class Main
                 }
 	}
 
-	private static void Browse(Statement stmt, Session session) 
+	private static void Browse(Statement stmt, Session session) // NOT DONE
 	{		
 		System.out.println("This command displays housing options that match specified criteria.");
                 
@@ -510,10 +539,13 @@ public class Main
                         System.out.print("Which housing ID did you stay at? ");
                         int hid = Integer.parseInt(sc.nextLine());
                         
-                        System.out.print("And for which period ID? ");
+                        System.out.print("For which period ID? ");
                         int pid = Integer.parseInt(sc.nextLine());
                         
-                        query = String.format("INSERT INTO Visit (login, hid, pid) VALUES ('%s', %d, %d)", session.getLogin(), hid, pid);
+                        System.out.print("How much did it cost per person? $");
+                        double cost = Double.parseDouble(sc.nextLine());
+                        
+                        query = String.format("INSERT INTO Visit (login, hid, pid, cost) VALUES ('%s', %d, %d, %f)", session.getLogin(), hid, pid, cost);
                         stmt.execute(query);
                         System.out.println("Stay recorded.");
                         
