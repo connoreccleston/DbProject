@@ -443,8 +443,8 @@ public class Main
 		System.out.print("Category: ");
 		String category = sc.nextLine();
 		System.out.println("These following options must be filled in:");
-		System.out.print("Which conjuction to use? (and, or)");
-		String conjuction = sc.nextLine();
+		System.out.print("Which conjuction to use? (must use: and, or): ");
+		String conjuction = sc.nextLine().trim();
 		System.out.print("Sorting method (price, feedback, trusted feedback): ");
 		String sortBy = sc.nextLine();
 
@@ -472,6 +472,11 @@ public class Main
 			conditions += String.format(" %s hk.wid in (SELECT wid FROM Keywords WHERE" + " word in (%s))", conjuction,
 					keywordsQuoted);
 		}
+		
+		if (sortBy.equals("trusted feedback")) {
+			conditions += String.format(" %s f.login in (SELECT login2 FROM Trust WHERE"
+					+ " login1='%s' AND isTrusted=1)", conjuction, session.getLogin());
+		}
 
 		// Remove the leading conjuction
 		if (conditions.startsWith(" and"))
@@ -484,10 +489,9 @@ public class Main
 
 		if (sortBy.equals("price")) {
 			query += " order by AVG(price)";
-		} else if (sortBy.equals("feedback")) {
+		} else if (sortBy.equals("feedback") || sortBy.equals("trusted feedback")) {
 			query += " order by AVG(f.score)";
-		} else if (sortBy.equals("trusted feedback")) {
-		}
+		} 
 
 		try {
 			ResultSet results = stmt.executeQuery(query);
@@ -501,9 +505,8 @@ public class Main
 						results.getDouble("average_score"));
 				System.out.println(resultString);
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("Unable to browse.");
 		}
 	}
 

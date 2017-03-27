@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class TH {
 	public static void new_listing(Scanner sc, Statement stmt, Session session) {
 		ResultSet results = null;
-		System.out.println("Here's a listing of your TH's, please enter id of one to setup a listing, or type back to go back");
+		System.out.println("Here's a listing of your TH's, please enter id of one to setup a listing, or type back to go back.");
 		String query = "SELECT * FROM TH WHERE login='" + session.getLogin() + "'";
 		try {
 			results = stmt.executeQuery(query);
@@ -211,7 +211,7 @@ public class TH {
 			int hid = results.getInt(1);
 			//Loop over each keyword and insert into Keywords and HasKeywords
 			for (String keyword : keywords) {
-				String keywordQuery = String.format("INSERT INTO Keywords (word) VALUES ('%s')", keyword);
+				String keywordQuery = String.format("INSERT INTO Keywords (word) VALUES ('%s')", keyword.trim());
 				stmt.execute(keywordQuery);
 				results = stmt.getGeneratedKeys();
 				results.last();
