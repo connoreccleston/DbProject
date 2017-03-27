@@ -193,7 +193,10 @@ public class TH {
                 
 		System.out.print("Enter the URL for the TH:");
 		String url = sc.nextLine();
-                
+		
+		System.out.print("Enter a comma separated list of keywords(ex: fancy,expensive):");
+		String[] keywords = sc.nextLine().split(",");
+
 		String login = session.getLogin();
 		
 		String query = String.format("INSERT INTO TH (category, address, phone_num, name, year_built, url, login)"
@@ -201,7 +204,21 @@ public class TH {
 				category, address, phone_num, name, year_built, url, login);
 		
 		try {
+			ResultSet results;
 			stmt.execute(query);
+			results = stmt.getGeneratedKeys();
+			results.last();
+			int hid = results.getInt(1);
+			//Loop over each keyword and insert into Keywords and HasKeywords
+			for (String keyword : keywords) {
+				String keywordQuery = String.format("INSERT INTO Keywords (word) VALUES ('%s')", keyword);
+				stmt.execute(keywordQuery);
+				results = stmt.getGeneratedKeys();
+				results.last();
+				int wid = results.getInt(1);
+				String hasKeywordQuery = String.format("INSERT INTO HasKeywords VALUES (%d, %d)", hid, wid);
+				stmt.execute(hasKeywordQuery);
+			}
 			System.out.println("TH has been added!");
 		} catch(Exception e) {
 			System.out.println(e);
