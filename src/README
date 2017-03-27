@@ -1,0 +1,10 @@
+Two Users in our database
+login = conor, password = pass
+login = logan, password = pass
+
+The main design decision that was made outside of the document was for the user to specify the conjuction used in browse
+
+To run program from console:
+While inside of this directory:
+javac cs5530/*.java
+java -cp mysql.jar:. cs5530.Main

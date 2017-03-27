@@ -162,7 +162,6 @@ public class TH {
 		}
 		
 		System.out.print("Please enter start date for reservation in yyyy-mm-dd format: "); 
-		sc.nextLine();
 		String startDate = sc.nextLine();
 		System.out.print("Please enter end date for reservation in yyyy-mm-dd format: ");
 		String endDate = sc.nextLine();
