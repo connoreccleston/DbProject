@@ -9,7 +9,75 @@ import java.util.Calendar;
 import java.util.Scanner;
 
 public class TH {
-	public static void new_listing(Scanner sc, Statement stmt, Session session) {
+	
+	public static void updateListing(Scanner sc, Statement stmt, Session session) {
+		ResultSet results = null;
+		System.out.println("Here's a listing of your TH's, please enter id of one to edit it.");
+		String query = "SELECT * FROM TH WHERE login='" + session.getLogin() + "'";
+		try {
+			results = stmt.executeQuery(query);
+			while (results.next()) {
+				String line = String.format("ID: %s\tNAME: %s",
+						results.getString("hid"), results.getString("name"));
+				System.out.println(line);
+			}
+			System.out.print("Please enter the id of the TH you'd like to setup a listing for: ");
+			int hid = Integer.parseInt(sc.nextLine());			
+
+			System.out.println("Press enter for fields you don't want to update.");
+            
+			System.out.print("Enter the category: ");
+			String category = sc.nextLine();
+	                
+			System.out.print("Enter the address: ");
+			String address = sc.nextLine();
+	                
+			System.out.print("Enter the phone number: ");
+			String phone_num = sc.nextLine();
+	                
+			System.out.print("Enter the name: ");
+			String name = sc.nextLine();
+	                
+			System.out.print("Enter the year house was built: ");
+			String yearBuiltString = sc.nextLine();
+	                
+			System.out.print("Enter the URL for the TH: ");
+			String url = sc.nextLine();
+			
+			query = "UPDATE TH SET";
+			if (!category.equals("")) {
+				query += " category='" + category + "',";
+			}
+			if (!address.equals("")) {
+				query += " address='" + address + "',";
+
+			}
+			if (!phone_num.equals("")) {
+				query += " phone_num='" + phone_num + "',";
+			}
+			if (!name.equals("")) {
+				query += " name='" + name + "',";
+			}
+			if (!yearBuiltString.equals("")) {
+				int yearBuilt = Integer.parseInt(yearBuiltString);
+				query += " year_built=" + yearBuilt + ",";
+			}
+			if (!url.equals("")) {
+				query += " URL='" + url + "',";
+			}
+			if (query.endsWith(",")) {
+				query = query.substring(0, query.length() - 1);
+			}
+			query += " WHERE login='" + session.getLogin() + "' AND hid=" + hid;
+			System.out.println(query);
+			stmt.execute(query);
+					
+		} catch(Exception e) {
+			System.err.println("Editing has been cancelled.");
+		}
+	}
+	
+	public static void newListing(Scanner sc, Statement stmt, Session session) {
 		ResultSet results = null;
 		System.out.println("Here's a listing of your TH's, please enter id of one to setup a listing, or type back to go back.");
 		String query = "SELECT * FROM TH WHERE login='" + session.getLogin() + "'";
@@ -197,8 +265,8 @@ public class TH {
 		}
 	}
 	
-	public static void new_th(Scanner sc, Statement stmt, Session session) { // Is this only supporting new? How can we allow modification of old?
-		System.out.println("Record details of a new TH or update info of an existing owned one.");
+	public static void new_th(Scanner sc, Statement stmt, Session session) { 
+		System.out.println("Record details of a new TH.");
                 
 		System.out.print("Enter the category: ");
 		String category = sc.nextLine();

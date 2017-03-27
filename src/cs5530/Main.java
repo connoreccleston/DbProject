@@ -757,7 +757,8 @@ public class Main
         // Switch for a new TH in the database or a new listing for a TH.
 	private static void New(Statement stmt, Session session) // Done
 	{
-		System.out.println("Please use commands \"new listing\" to create a listing or \"new th\" for a new temporary housing entry.");
+		System.out.println("Please use commands \"new listing\" to create a listing, \"new th\" for a new temporary housing entry, "
+				+ "\"edit th\" to edit a TH.");
 		String cmd = sc.nextLine();
 		//ResultSet results = null;
 		
@@ -767,8 +768,10 @@ public class Main
 				TH.new_th(sc, stmt, session);
 				break;
 			case "new listing":
-				TH.new_listing(sc, stmt, session);
+				TH.newListing(sc, stmt, session);
 				break;
+			case "edit th":
+				TH.updateListing(sc, stmt, session);
 		}		
 	}
         
