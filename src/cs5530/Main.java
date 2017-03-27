@@ -743,13 +743,14 @@ public class Main
 		}		
 	}
         
-        // Lets users reserve a TH.
-        private static void Reserve(Statement stmt, Session session) // Done
+    // Lets users reserve a TH.
+	private static void Reserve(Statement stmt, Session session) // Done
 	{				
 		System.out.println("Record a reservation using TH id, if not type 0 to go back: (You can find ID's by using our \"browse\" command on the main screen.)");
                 
-		int pid = sc.nextInt();		
-		if (pid != 0)
-			TH.reserveListing(pid, sc, stmt, session);
-        }
+		int hid = sc.nextInt();		
+		if (hid != 0) {
+			TH.reserveListing(hid, sc, stmt, session);
+		}
+	}
 }

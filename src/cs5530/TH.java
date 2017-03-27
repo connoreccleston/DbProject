@@ -1,6 +1,7 @@
 package cs5530;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,7 +54,21 @@ public class TH {
 	
 	public static void reserveListing(int hid, Scanner sc, Statement stmt, Session session) {
 		ResultSet results = null;
-		System.out.println("");
+		System.out.println("Following periods are available for this TH:");
+		String query = "SELECT * FROM Period p JOIN Available a"
+				+ " ON p.pid = a.pid WHERE a.hid='" + hid + "'";
+		try {
+			results = stmt.executeQuery(query);
+			while (results.next()) {
+				String resultString = String.format("Date Range %s To  %s, Price Per Night: %f",
+						results.getString("from_date"), results.getString("to_date"),
+						results.getDouble("price"));
+				System.out.println(resultString);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
 		System.out.print("Please enter start date for reservation in yyyy-mm-dd format:"); 
 		sc.nextLine();
 		String startDate = sc.nextLine();
@@ -62,12 +77,11 @@ public class TH {
 		
 		//TODO: Display a listing of all dates this TH is available
 		//TODO: Make sure a user can't enter an availability that's in between a date multiple times.
-		String query = "SELECT p.pid, from_date, to_date, a.price, datediff(p.to_date, p.from_date) * a.price as cost"
+		query = "SELECT p.pid, from_date, to_date, a.price, datediff(p.to_date, p.from_date) * a.price as cost"
 				+ " FROM Available a, Period p"
 				+ " where a.pid = p.pid"
 				+ " and a.hid=" + hid 
 				+ " and p.from_date <= '" + startDate + "' and p.to_date >= '" + endDate + "'" ;
-		System.out.println(query);
 		try {
 			int price = 0;
 			int pid = 0;
@@ -146,11 +160,12 @@ public class TH {
 					session.getLogin(), hid, pid, price);
 					stmt.execute(query);
 					System.out.println("TH has been reserved!");
+					suggestListings(hid, stmt, session);
 				}
 				
 			// No available listings found
 			} else {
-				System.out.println("No listings for that TH are available for that date range.");
+				System.out.println("No reservations made");
 			}
 
 		} catch(Exception e) {
@@ -193,9 +208,23 @@ public class TH {
 		}
 	}
 	
-	public static void browseListings() {
-		String query = "Select * from TH t, Available a, Period p where "
-				+ " t.hid = a.hid and a.pid = p.pid";
-		
+	public static void suggestListings(int hid, Statement stmt, Session session) {
+		String query = String.format("SELECT t.hid, t.name FROM Visit v"
+				+ " JOIN TH t on t.hid = v.hid"
+				+ " WHERE v.hid=%d and v.login <> '%s'"
+				+ " group by t.hid, t.name"
+				+ " order by COUNT(*) desc",
+				hid, session.getLogin());
+		System.out.println("Other suggested TH's to reserve:");
+		try {
+			ResultSet results = stmt.executeQuery(query);
+			while (results.next()) {
+				System.out.println(String.format("ID: %d, Name: %s",
+						results.getInt("hid"), results.getString("name")));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
