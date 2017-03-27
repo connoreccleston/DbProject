@@ -6,7 +6,6 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Scanner;
 
 public class TH {
@@ -21,10 +20,22 @@ public class TH {
 						results.getString("hid"), results.getString("name"));
 				System.out.println(line);
 			}
+			
 
 			System.out.print("Please enter the id of the TH you'd like to setup a listing for: ");
 			int hid = Integer.parseInt(sc.nextLine());
-                        
+			
+			System.out.println("Following periods are already listed for this TH:");
+			query = "SELECT * FROM Period p JOIN Available a"
+					+ " ON p.pid = a.pid WHERE a.hid='" + hid + "'";
+
+			results = stmt.executeQuery(query);
+			while (results.next()) {
+				String resultString = String.format("Date Range %s To  %s, Price Per Night: %f",
+						results.getString("from_date"), results.getString("to_date"), results.getDouble("price"));
+				System.out.println(resultString);
+			}
+			System.out.println("Please choose dates not within the ranges above");
 			System.out.print("Please enter start date in yyyy-mm-dd format: "); 
 			String start_date = sc.nextLine();
                         
@@ -33,6 +44,19 @@ public class TH {
                         
 			System.out.print("Please enter price-per-night: ");
 			double price = Double.parseDouble(sc.nextLine());
+			
+			//First check to see if the period falls within another period's time frame
+			query = "SELECT *"
+					+ " FROM Available a, Period p"
+					+ " where a.pid = p.pid"
+					+ " and a.hid=" + hid 
+					+ " and p.from_date <= '" + start_date + "' and p.to_date >= '" + end_date + "'" ;
+			
+			results = stmt.executeQuery(query);
+			if (results.next()) {
+				System.out.println("That listing has already been made during that time frame.");
+				return;
+			}
 			
 			query = String.format("INSERT INTO Period (from_date, to_date) VALUES ('%s', '%s')",
 					start_date, end_date);
@@ -48,7 +72,7 @@ public class TH {
 			stmt.execute(query);
 			System.out.println("TH has been listed!");
 		} catch(Exception e) {
-			System.out.println(e);
+			System.out.println("Listing has been cancelled.");
 		}
 	}
 	
@@ -66,7 +90,7 @@ public class TH {
 				System.out.println(resultString);
 			}
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			System.out.println("Unable to display listings.");
 		}
 		
 		System.out.print("Please enter start date for reservation in yyyy-mm-dd format:"); 
@@ -165,11 +189,11 @@ public class TH {
 				
 			// No available listings found
 			} else {
-				System.out.println("No reservations made");
+				System.out.println("No reservations made.");
 			}
 
 		} catch(Exception e) {
-			System.out.println(e);
+			System.out.println("No reservations made.");
 		}
 	}
 	
@@ -221,7 +245,7 @@ public class TH {
 			}
 			System.out.println("TH has been added!");
 		} catch(Exception e) {
-			System.out.println(e);
+			System.out.println("No TH has been added.");
 		}
 	}
 	
@@ -240,8 +264,7 @@ public class TH {
 						results.getInt("hid"), results.getString("name")));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Could not retrieve suggestions.");
 		}
 	}
 }
