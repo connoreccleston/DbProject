@@ -3,7 +3,9 @@ package cs5530;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
+//import java.util.Scanner;
+import java.util.*;
+//import java.util.ArrayList;
 
 public class Main
 {
@@ -505,8 +507,14 @@ public class Main
                 System.out.println("Usernames: (Comma separated list.)");
 		String usernames = sc.nextLine();
                 
+                if(usernames.contains(session.getLogin()))
+                {
+                        System.err.println("You cannot trust yourself.");
+                        return;
+                }
+                                
                 String[] userArr = usernames.split(",");
-                
+                               
                 System.out.print("Trust these users? (yes/no) ");
                 
                 // 1 and -1 rather than 1 and 0 so the results can be added to get user's total trustworthyness.
@@ -541,6 +549,23 @@ public class Main
                 System.out.print("Which feedback ID would you like to rate? ");
 		int fid = Integer.parseInt(sc.nextLine());
                 
+                ResultSet results = null;
+                String query = String.format("SELECT login FROM Feedback WHERE fid = %d", fid);  
+                
+                try 
+                {
+                        results = stmt.executeQuery(query);
+                        if(results.getString("login").equals(session.getLogin()))
+                        {
+                                System.err.println("You cannot rate your own feedbacks.");
+                                return;
+                        }                
+                } 
+                catch (Exception e) 
+                {
+                        System.err.println(e);
+                }
+                
                 System.out.println("How useful is it? (useless/useful/very useful)");
                 String rating = sc.nextLine();
                 
@@ -551,7 +576,7 @@ public class Main
                 else if(rating.equalsIgnoreCase("very useful"))
                         score = 2;
 
-                String query = String.format("INSERT INTO Rates VALUES ('%s', %d, %d)", session.getLogin(), fid, score);
+                query = String.format("INSERT INTO Rates VALUES ('%s', %d, %d)", session.getLogin(), fid, score);
                 
                 try 
                 {
@@ -647,18 +672,43 @@ public class Main
                 
 		try 
                 {
+                        Map<Integer, ArrayList<Integer>> valid = new HashMap();
+                    
 			results = stmt.executeQuery(query);
+                        
 			while (results.next()) 
                         {
 				String line = String.format("Housing ID %s from %s to %s (period ID: %s).", results.getString("hid"), results.getString("from_date"), results.getString("to_date"), results.getString("pid"));
+                                
+                                ArrayList periods = valid.get(Integer.parseInt(results.getString("hid")));
+                                if (periods == null) 
+                                {
+                                        periods = new ArrayList();
+                                        valid.put(Integer.parseInt(results.getString("hid")), periods);
+                                }
+                                periods.add(Integer.parseInt(results.getString("pid")));
+                                
 				System.out.println(line);
 			}
                         
                         System.out.print("Which housing ID did you stay at? ");
                         int hid = Integer.parseInt(sc.nextLine());
                         
+                        if(!valid.containsKey(hid))
+                        {
+                            System.err.println("You cannot record a stay at a housing you didn't have a reservation for.");
+                            return;
+                        }
+                        
                         System.out.print("For which period ID? ");
                         int pid = Integer.parseInt(sc.nextLine());
+                        
+                        ArrayList periods = valid.get(hid);
+                        if(!periods.contains(pid))
+                        {
+                            System.err.println("You did not stay at that housing during that period.");
+                            return;
+                        }
                         
                         System.out.print("How much did it cost per person? $");
                         double cost = Double.parseDouble(sc.nextLine());
