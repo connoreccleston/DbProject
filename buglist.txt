@@ -5,28 +5,18 @@ None.
 
 ALL BUGS:
 
-Exiting reserve with ID 0 has nextInt error.
-
 Add "0 to go back" to other methods if there's time.
 
 Can't change whether you trust a user or not. (Not specified one way or other in doc.)
 
 Sometimes called TH, sometimes called housing option, make consistant.
 
-Need to trim() keywords before searching table for them or inserting them.
-
-Exceptions/errors in TH.java use System.out instead of System.err.
-
-No space after colon when asking for TH's URL or after asking for keyword list.
-
-Missing periods in several places in TH.java.
-
-Period is created in table even if listing is not added.
+Period is created in table even if listing is not added!
 
 Doubles printed from SQL output have 6 decimal places, should probably be 2.
 
-System.out and System.err printing out of order, don't know if this can be fixed.
-
 When you record a stay, you enter a price, should this instead be copied from your reservation?
 
-Change instances of "Integer.parseInt(results.getString("whatever"))" to "results.getInt("whatever")"
+Change instances of "Integer.parseInt(results.getString("whatever"))" to "results.getInt("whatever")."
+
+Make default keyword language English.

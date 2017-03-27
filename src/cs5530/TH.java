@@ -35,7 +35,7 @@ public class TH {
 						results.getString("from_date"), results.getString("to_date"), results.getDouble("price"));
 				System.out.println(resultString);
 			}
-			System.out.println("Please choose dates not within the ranges above");
+			System.out.println("Please choose dates not within the ranges above.");
 			System.out.print("Please enter start date in yyyy-mm-dd format: "); 
 			String start_date = sc.nextLine();
                         
@@ -72,7 +72,7 @@ public class TH {
 			stmt.execute(query);
 			System.out.println("TH has been listed!");
 		} catch(Exception e) {
-			System.out.println("Listing has been cancelled.");
+			System.err.println("Listing has been cancelled.");
 		}
 	}
 	
@@ -90,13 +90,13 @@ public class TH {
 				System.out.println(resultString);
 			}
 		} catch (SQLException e1) {
-			System.out.println("Unable to display listings.");
+			System.err.println("Unable to display listings.");
 		}
 		
-		System.out.print("Please enter start date for reservation in yyyy-mm-dd format:"); 
+		System.out.print("Please enter start date for reservation in yyyy-mm-dd format: "); 
 		sc.nextLine();
 		String startDate = sc.nextLine();
-		System.out.print("Please enter end date for reservation in yyyy-mm-dd format:");
+		System.out.print("Please enter end date for reservation in yyyy-mm-dd format: ");
 		String endDate = sc.nextLine();
 		
 		//TODO: Display a listing of all dates this TH is available
@@ -114,7 +114,7 @@ public class TH {
 			double pricePerNight = 0.0;
 			results = stmt.executeQuery(query);
 			while(results.next()) {
-				String display = String.format("Price per night: %f for this date range, type yes to reserve or no to go back",
+				String display = String.format("Price per night: %f for this date range, type \"yes\" to reserve or \"no\" to go back.",
 						results.getFloat("price"));
 				pid = results.getInt("pid");
 				pricePerNight = results.getDouble("price");
@@ -189,11 +189,11 @@ public class TH {
 				
 			// No available listings found
 			} else {
-				System.out.println("No reservations made.");
+				System.err.println("No reservations made.");
 			}
 
 		} catch(Exception e) {
-			System.out.println("No reservations made.");
+			System.err.println("No reservations made.");
 		}
 	}
 	
@@ -215,10 +215,10 @@ public class TH {
 		System.out.print("Enter the year house was built: ");
 		int year_built = Integer.parseInt(sc.nextLine());
                 
-		System.out.print("Enter the URL for the TH:");
+		System.out.print("Enter the URL for the TH: ");
 		String url = sc.nextLine();
 		
-		System.out.print("Enter a comma separated list of keywords(ex: fancy,expensive):");
+		System.out.print("Enter a comma separated list of keywords(ex: fancy,expensive): ");
 		String[] keywords = sc.nextLine().split(",");
 
 		String login = session.getLogin();
@@ -245,7 +245,7 @@ public class TH {
 			}
 			System.out.println("TH has been added!");
 		} catch(Exception e) {
-			System.out.println("No TH has been added.");
+			System.err.println("No TH has been added.");
 		}
 	}
 	
@@ -264,7 +264,7 @@ public class TH {
 						results.getInt("hid"), results.getString("name")));
 			}
 		} catch (SQLException e) {
-			System.out.println("Could not retrieve suggestions.");
+			System.err.println("Could not retrieve suggestions.");
 		}
 	}
 }

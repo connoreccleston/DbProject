@@ -777,7 +777,7 @@ public class Main
 	{				
 		System.out.println("Record a reservation using TH id, if not type 0 to go back: (You can find ID's by using our \"browse\" command on the main screen.)");
                 
-		int hid = sc.nextInt();		
+		int hid = Integer.parseInt(sc.nextLine());		
 		if (hid != 0) {
 			TH.reserveListing(hid, sc, stmt, session);
 		}
