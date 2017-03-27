@@ -425,10 +425,11 @@ public class Main
 	{ 
 		double priceLow = 0.0;
 		double priceHigh = 0.0;
-		String query = "SELECT t.hid, t.name, t.category, t.address, t.phone_num, t.year_built, AVG(a.price), t.URL"
-						+ "FROM TH t"
-						+ "join Available a on t.hid = a.hid"
-						+ "left join Feedback f on t.hid = f.hid ";
+		String query = "SELECT t.hid, t.name, t.category, t.address, t.phone_num, t.year_built, "
+				+ "AVG(a.price) as average_price, t.URL, AVG(f.score) as average_score"
+						+ " FROM TH t"
+						+ " join Available a on t.hid = a.hid"
+						+ " left join Feedback f on t.hid = f.hid where";
 		String conditions = "";
 		System.out.println("This command displays housing options that match specified criteria.");
 		System.out.println("Press enter if you'd like to ignore that filter.");
@@ -456,7 +457,7 @@ public class Main
 		}
 		
 		if (!address.equals("")) {
-			conditions += String.format(" %s t.address = '%s'", conjuction, address);
+			conditions += String.format(" %s t.address like '%%s%'", conjuction, address);
 		}
 		
 		if (!category.equals("")) {
@@ -485,10 +486,11 @@ public class Main
 			while (results.next()) {
 				String resultString = String.format(
 						"ID: %d, Name: %s, Category: %s, Address: %s, Phone Number: %s"
-						+ " Year Built: %d, URL: %s",
+						+ " Year Built: %d, URL: %s, Average Price: %f, Average Score: %f",
 						results.getInt("hid"), results.getString("name"), results.getString("category"),
 						results.getString("address"), results.getString("phone_num"),
-						results.getInt("year_built"), results.getString("URL"));
+						results.getInt("year_built"), results.getString("URL"),
+						results.getDouble("average_price"), results.getDouble("average_score"));
 				System.out.println(resultString);
 			}
 		} catch (SQLException e) {
