@@ -428,7 +428,8 @@ public class Main
 		String query = "SELECT t.hid, t.name, t.category, t.address, t.phone_num, t.year_built, "
 				+ "AVG(a.price) as average_price, t.URL, AVG(f.score) as average_score"
 						+ " FROM TH t"
-						+ " join Available a on t.hid = a.hid"
+						+ " left join Available a on t.hid = a.hid"
+						+ " left join HasKeywords hk on t.hid = hk.hid"
 						+ " left join Feedback f on t.hid = f.hid where";
 		String conditions = "";
 		System.out.println("This command displays housing options that match specified criteria.");
@@ -464,6 +465,17 @@ public class Main
 			conditions += String.format(" %s t.category = '%s'", conjuction, category);
 		}
 		
+		if(!keywords.equals("")) {
+			String keywordsQuoted = "";
+			for (String keyword : keywords.split(",")) {
+				keywordsQuoted += "'"+keyword.trim()+"',";
+			}
+			//Strip last comma
+			keywordsQuoted = keywordsQuoted.substring(0, keywordsQuoted.length() - 1);
+			conditions += String.format(" %s hk.wid in (SELECT wid FROM Keywords WHERE"
+					+ " word in (%s))", conjuction, keywordsQuoted);
+		}
+		
 		//Remove the leading conjuction
 		if (conditions.startsWith(" and"))
 			conditions = conditions.substring(4);
@@ -481,7 +493,6 @@ public class Main
 		}
 		
 		try {
-			System.out.println(query);
 			ResultSet results = stmt.executeQuery(query);
 			while (results.next()) {
 				String resultString = String.format(
