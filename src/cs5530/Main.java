@@ -611,14 +611,25 @@ public class Main
                 
                 try 
                 {
+                        ArrayList<Integer> IDs = new ArrayList();
+                    
                         results = stmt.executeQuery(query);
                         System.out.print("Housing IDs: ");                        
                         while (results.next())
+                        {
                                 System.out.print(results.getString("hid") + " ");
+                                IDs.add(Integer.parseInt(results.getString("hid")));
+                        }
 
                         System.out.print("\nPlease enter the id of the housing you'd like to review: ");
                         int hid = Integer.parseInt(sc.nextLine());
-
+                        
+                        if(!IDs.contains(hid))
+                        {
+                            System.err.println("You cannot favorite a housing you have not stayed at.");
+                            return;                            
+                        }
+                        
                         String date = "CURDATE()"; // Tells SQL to get the current date.
 
                         System.out.print("Rate the housing on a scale of 0-10: ");
@@ -645,18 +656,28 @@ public class Main
 		System.out.println("This command lets you declare a housing as a favorite place to stay.");
                                 
                 ResultSet results = null;
-		System.out.println("Here are the housings where you had a reservation.");
+		System.out.println("Here are the housings you have visited.");
 		String query = String.format("SELECT * FROM Visit WHERE login = '%s'", session.getLogin());
 
                 try 
                 {
+                        ArrayList<Integer> IDs = new ArrayList();
                         results = stmt.executeQuery(query);
                         System.out.print("Housing IDs: ");
                         while (results.next())
+                        {
                                 System.out.print(results.getString("hid") + " ");
+                                IDs.add(Integer.parseInt(results.getString("hid")));
+                        }
 
                         System.out.print("\nPlease enter the id of the housing you'd like to favorite: ");
                         int hid = Integer.parseInt(sc.nextLine());
+                        
+                        if(!IDs.contains(hid))
+                        {
+                            System.err.println("You cannot favorite a housing you have not stayed at.");
+                            return;                            
+                        }
 
                         String date = "CURDATE()"; // Tells SQL to get the current date.
 

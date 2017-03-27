@@ -1,11 +1,6 @@
 MAJOR BUGS:
 
-Able to favorite housing you've never visited!
-
-Able to leave feedback for housing you've never visited!
-
-Can leave feedback multiple times for the same TH!
-
+None.
 
 
 ALL BUGS:
@@ -14,15 +9,9 @@ Exiting reserve with ID 0 has nextInt error.
 
 Add "0 to go back" to other methods if there's time.
 
-Able to favorite housing you've never visited!
+Can't change whether you trust a user or not. (Not specified one way or other in doc.)
 
-Able to leave feedback for housing you've never visited!
-
-Can leave feedback multiple times for the same TH!
-
-Can't change whether you trust a user or not.
-
-Sometimes called TH, sometimes called housing (option), make consistant.
+Sometimes called TH, sometimes called housing option, make consistant.
 
 Need to trim() keywords before searching table for them or inserting them.
 
@@ -40,4 +29,4 @@ System.out and System.err printing out of order, don't know if this can be fixed
 
 When you record a stay, you enter a price, should this instead be copied from your reservation?
 
-Cost in Visit is an int, not a double.
+Change instances of "Integer.parseInt(results.getString("whatever"))" to "results.getInt("whatever")"
